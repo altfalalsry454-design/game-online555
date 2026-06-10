@@ -15,7 +15,7 @@
         .btn-submit:hover { background-color: #2ea043; }
         .toggle-auth { margin-top: 20px; font-size: 14px; color: #8b949e; }
         .toggle-auth a { color: #58a6ff; text-decoration: none; margin-right: 5px; cursor: pointer; }
-        #alertBox { margin-top: 15px; padding: 10px; border-radius: 5px; display: none; font-weight: bold; }
+        #alertBox { margin-top: 15px; padding: 10px; border-radius: 5px; display: none; font-weight: bold; text-align: center; font-size: 14px; }
         .err { background-color: #ff475752; color: #ff4757; border: 1px solid #ff4757; }
         .succ { background-color: #23863652; color: #238636; border: 1px solid #238636; }
     </style>
@@ -77,6 +77,7 @@
             document.getElementById('btnSubmit').innerText = isSignUpMode ? "سجل الآن" : "تسجيل الدخول";
             document.getElementById('toggleText').innerText = isSignUpMode ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟";
             document.getElementById('toggleLink').innerText = isSignUpMode ? "تسجيل الدخول" : "إنشاء حساب جديد";
+            document.getElementById('alertBox').style.display = 'none'; // إخفاء الرسالة عند التبديل
         }
 
         document.getElementById('authForm').addEventListener('submit', async (event) => {
@@ -97,14 +98,36 @@
                 if (isSignUpMode) {
                     let res = await createUserWithEmailAndPassword(auth, email, pass);
                     await set(ref(db, 'users/' + res.user.uid), { username: user, points: 0 });
-                    showAlert("تم إنشاء الحساب بنجاح!", "succ");
+                    showAlert("تم إنشاء الحساب بنجاح! جاري تحويلك للعبة...", "succ");
                 } else {
                     await signInWithEmailAndPassword(auth, email, pass);
-                    showAlert("تم تسجيل الدخول بنجاح!", "succ");
+                    showAlert("تم تسجيل الدخول بنجاح! جاري تحويلك للعبة...", "succ");
                 }
-                setTimeout(() => { window.location.href = "game.html?user=" + encodeURIComponent(user); }, 1000);
+                setTimeout(() => { window.location.href = "game.html?user=" + encodeURIComponent(user); }, 1500);
             } catch (err) {
-                showAlert("خطأ: " + err.message, "err");
+                let errorMessage = "حدث خطأ غير متوقع، حاول مرة أخرى.";
+
+                // فحص نوع الخطأ من فايربيز وترجمته لرسالة عربية واضحة
+                switch (err.code) {
+                    case "auth/weak-password":
+                        errorMessage = "عفواً! يجب أن تكون كلمة المرور مكونة من 6 أرقام أو أحرف على الأقل.";
+                        break;
+                    case "auth/invalid-email":
+                        errorMessage = "اسم المستخدم غير صالح أو يحتوي على رموز ممنوعة.";
+                        break;
+                    case "auth/email-already-in-use":
+                        errorMessage = "اسم المستخدم هذا مسجل بالفعل! جرب اسماً آخر أو سجل دخولك.";
+                        break;
+                    case "auth/wrong-password":
+                    case "auth/invalid-credential":
+                        errorMessage = "خطأ في اسم المستخدم أو كلمة المرور، تأكد من البيانات.";
+                        break;
+                    case "auth/user-not-found":
+                        errorMessage = "هذا الحساب غير موجود، يرجى إنشاء حساب جديد أولاً.";
+                        break;
+                }
+
+                showAlert(errorMessage, "err");
             }
         });
     </script>
