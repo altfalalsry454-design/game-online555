@@ -3,44 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - أدمن الحرامي والبنك</title>
+    <title>لوحة التحكم الخارقة - أدمن الحرامي والبنك</title>
     
     <style>
         body { margin: 0; padding: 20px; background-color: #0d1117; color: #ffffff; font-family: sans-serif; box-sizing: border-box; }
-        .admin-container { max-width: 1200px; margin: 0 auto; }
+        .admin-container { max-width: 1400px; margin: 0 auto; }
         
-        /* الهيدر والإحصائيات */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 30px; }
         .header h1 { color: #58a6ff; margin: 0; }
         .btn-logout { padding: 10px 20px; background-color: #21262d; border: 1px solid #30363d; color: #ff7b72; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-logout:hover { background-color: #f85149; color: white; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, min-max(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card { background-color: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 8px; text-align: center; }
-        .stat-card h3 { margin: 0 0 10px 0; color: #8b949e; font-size: 16px; }
-        .stat-card p { margin: 0; font-size: 28px; font-weight: bold; color: #58a6ff; }
+        .stat-card h3 { margin: 0 0 10px 0; color: #8b949e; font-size: 14px; }
+        .stat-card p { margin: 0; font-size: 24px; font-weight: bold; color: #58a6ff; }
 
-        /* التحكم الرئيسي بالموقع */
-        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
+        /* تقسيم اللوحة لثلاثة أعمدة رئيسية لتستوعب الإضافات الكبيرة */
+        .main-grid { display: grid; grid-template-columns: 1.5fr 1.2fr 1.3fr; gap: 20px; }
+        @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
         
-        .card { background-color: #161b22; border: 1px solid #30363d; padding: 25px; border-radius: 8px; margin-bottom: 20px; }
-        .card h2 { margin-top: 0; color: #c9d1d9; border-bottom: 1px solid #30363d; padding-bottom: 10px; font-size: 18px; }
+        .card { background-color: #161b22; border: 1px solid #30363d; padding: 22px; border-radius: 8px; margin-bottom: 20px; }
+        .card h2 { margin-top: 0; color: #79c0ff; border-bottom: 1px solid #30363d; padding-bottom: 10px; font-size: 17px; }
 
-        /* تصميم الجدول */
-        table { width: 100%; border-collapse: collapse; text-align: right; margin-top: 10px; }
-        th, td { padding: 12px; border-bottom: 1px solid #30363d; }
+        table { width: 100%; border-collapse: collapse; text-align: right; margin-top: 10px; font-size: 14px; }
+        th, td { padding: 10px; border-bottom: 1px solid #30363d; }
         th { color: #8b949e; background-color: #0d1117; }
         tr:hover { background-color: #21262d; }
         
-        /* أزرار وحقول إدخال */
-        .input-style { width: 100%; padding: 10px; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: white; margin-bottom: 15px; box-sizing: border-box; }
-        .btn { padding: 10px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-block; }
+        .input-style { width: 100%; padding: 10px; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: white; margin-bottom: 15px; box-sizing: border-box; font-size: 14px; }
+        .row-flex { display: flex; gap: 10px; }
+        
+        .btn { padding: 10px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-block; font-size: 14px; }
         .btn-success { background-color: #238636; color: white; width: 100%; }
         .btn-success:hover { background-color: #2ea043; }
         .btn-danger { background-color: rgba(248, 81, 73, 0.15); color: #f85149; border: 1px solid rgba(248, 81, 73, 0.4); padding: 5px 10px; font-size: 13px; }
         .btn-danger:hover { background-color: #f85149; color: white; }
-        .btn-system { background-color: #388bfd; color: white; margin-left: 10px; }
+        .btn-system { background-color: #388bfd; color: white; width: 100%; margin-bottom: 10px; }
+        .btn-gift { background-color: #d29922; color: white; width: 100%; }
+
+        .log-box { background-color: #0d1117; border: 1px solid #30363d; height: 120px; overflow-y: auto; padding: 10px; font-family: monospace; font-size: 12px; color: #79c0ff; border-radius: 6px; }
+        .log-entry { margin-bottom: 5px; border-bottom: 1px dashed #21262d; padding-bottom: 3px; }
         
         #alertBox { padding: 10px; border-radius: 6px; margin-bottom: 15px; display: none; text-align: center; font-weight: bold; }
         .succ { background-color: rgba(46, 160, 67, 0.15); color: #3fb950; border: 1px solid rgba(46, 160, 67, 0.4); }
@@ -50,7 +53,7 @@
 
     <div class="admin-container">
         <div class="header">
-            <h1>🛠️ لوحة تحكم الإدارة العليا (Zero)</h1>
+            <h1>🛠️ لوحة تحكم الإدارة العليا الخارقة (Zero)</h1>
             <button class="btn-logout" onclick="logoutAdmin()">تسجيل الخروج</button>
         </div>
 
@@ -60,11 +63,15 @@
                 <p id="totalUsers">0</p>
             </div>
             <div class="stat-card">
-                <h3>إمبراطور السرقة (أعلى نقاط)</h3>
-                <p id="topPlayer" style="font-size: 20px; color: #ff7b72;">لا يوجد</p>
+                <h3>الرومات المفتوحة حالياً</h3>
+                <p id="totalRooms" style="color:#d29922;">0</p>
             </div>
             <div class="stat-card">
-                <h3>حالة سيرفر اللعبة</h3>
+                <h3>إمبراطور السرقة</h3>
+                <p id="topPlayer" style="font-size: 15px; color: #ff7b72;">لا يوجد</p>
+            </div>
+            <div class="stat-card">
+                <h3>حالة السيرفر</h3>
                 <p id="serverStatus" style="color: #3fb950;">نشط ✅</p>
             </div>
         </div>
@@ -73,47 +80,102 @@
 
         <div class="main-grid">
             
-            <div class="card">
-                <h2>👥 قائمة اللاعبين والتحكم بالحسابات</h2>
-                <div style="overflow-x:auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>اسم المستخدم (اللاعب)</th>
-                                <th>معرف الـ UID</th>
-                                <th>النقاط الحالية</th>
-                                <th>إجراءات إدارية</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTableBody">
-                            <tr>
-                                <td colspan="4" style="text-align:center; color:#8b949e;">جاري تحميل اللاعبين من قاعدة البيانات...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-bottom: 15px;">
+                        <h2 style="margin:0; border:none; padding:0;">👥 قائمة اللاعبين الحالية</h2>
+                        <input type="text" id="searchInput" oninput="searchPlayers()" placeholder="🔍 ابحث بالاسم..." style="width: 140px; padding: 6px 10px; background:#0d1117; border:1px solid #30363d; color:white; border-radius:6px; font-size:12px;">
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>اسم اللاعب</th>
+                                    <th>النقاط</th>
+                                    <th>إجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr><td colspan="3" style="text-align:center; color:#8b949e;">جاري التحميل...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📢 إرسال إعلان متحرك داخل الجيم</h2>
+                    <input type="text" id="globalNotice" class="input-style" placeholder="اكتب التنبيه للجميع هنا...">
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="sendNotice()">بث الإعلان 📡</button>
+                        <button class="btn btn-danger" onclick="clearNotice()" style="background:transparent;">مسح</button>
+                    </div>
                 </div>
             </div>
 
             <div>
                 <div class="card">
-                    <h2>✏️ تعديل سريع على نقاط لاعب</h2>
-                    <label style="color:#8b949e; display:block; margin-bottom:5px;">اختر اللاعب:</label>
-                    <select id="userSelect" class="input-style">
-                        <option value="">-- اختر لاعباً من القائمة --</option>
-                    </select>
-                    
-                    <label style="color:#8b949e; display:block; margin-bottom:5px;">النقاط الجديدة:</label>
-                    <input type="number" id="newPoints" class="input-style" placeholder="أدخل عدد النقاط الجديد">
-                    
-                    <button class="btn btn-success" onclick="updateUserPoints()">تحديث النقاط فوراً</button>
+                    <h2>🎮 مراقبة وإدارة غرف اللعب (Rooms)</h2>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>اسم الروم</th>
+                                    <th>كلمة السر</th>
+                                    <th>إجراءات الإغلاق</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roomsTableBody">
+                                <tr><td colspan="3" style="text-align:center; color:#8b949e;">لا توجد رومات نشطة حالياً.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="card">
-                    <h2>⚙️ إعدادات النظام العام للموقع</h2>
-                    <p style="font-size:13px; color:#8b949e;">تحكم كامل في قواعد وعمل موقع اللعبة حالياً:</p>
+                    <h2>🔐 قفل روم معين بكلمة سر إجبارية</h2>
+                    <select id="roomSelect" class="input-style"><option value="">-- اختر غُرفة --</option></select>
+                    <input type="text" id="roomPasswordInput" class="input-style" placeholder="اكتب كلمة السر الجديدة للروم">
+                    <button class="btn btn-success" onclick="setRoomPassword()">تطبيق كلمة السر فوراً 🔒</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <h2>🎭 تعديل مسميات وميزات اللعبة الأساسية</h2>
                     
+                    <label style="color:#8b949e; font-size:13px;">اسم الحرامي في اللعبة:</label>
+                    <input type="text" id="thiefNameInput" class="input-style" placeholder="مثال: اللص المحترف">
+
+                    <label style="color:#8b949e; font-size:13px;">اسم مدير البنك / الشرطي:</label>
+                    <input type="text" id="bankerNameInput" class="input-style" placeholder="مثال: مأمور البنك">
+                    
+                    <div class="row-flex">
+                        <div>
+                            <label style="color:#8b949e; font-size:12px;">ميزة سرعة الحرامي:</label>
+                            <input type="number" id="thiefSpeedInput" class="input-style" placeholder="مثال: 12">
+                        </div>
+                        <div>
+                            <label style="color:#8b949e; font-size:12px;">قوة الشرطي / الأمن:</label>
+                            <input type="number" id="policePowerInput" class="input-style" placeholder="مثال: 8">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success" onclick="updateGameMechanics()" style="background-color: #388bfd;">تحديث إعدادات اللعبة ⚔️</button>
+                </div>
+
+                <div class="card">
+                    <h2>✏️ تحكم سريع وتوزيع مكافآت</h2>
+                    <select id="userSelect" class="input-style"><option value="">-- اختر لاعباً --</option></select>
+                    <input type="number" id="newPoints" class="input-style" placeholder="النقاط الجديدة">
+                    <button class="btn btn-success" onclick="updateUserPoints()" style="margin-bottom:10px;">تعديل النقاط</button>
+                    <input type="number" id="giftAmount" class="input-style" placeholder="مكافأة جماعية للكل (+50)">
+                    <button class="btn btn-gift" onclick="giveBulkGift()">توزيع هدايا جماعية 🎁</button>
+                </div>
+
+                <div class="card" style="padding:15px;">
+                    <h2>⚙️ النظام والسجلات</h2>
                     <button class="btn btn-system" id="toggleServerBtn" onclick="toggleServer()">تعطيل اللعبة مؤقتاً ⚠️</button>
-                    <button class="btn btn-danger" onclick="resetAllPoints()" style="margin-top: 15px; width: 100%;">🔴 تصفير نقاط كل اللاعبين (سيزون جديد)</button>
+                    <div class="log-box" id="logBox"></div>
                 </div>
             </div>
 
@@ -137,146 +199,203 @@
         const db = getDatabase(app);
 
         let allUsersData = {};
+        let allRoomsData = {};
         let isServerOnline = true;
 
-        function showAdminAlert(txt, type) {
+        function addLog(text) {
+            const box = document.getElementById('logBox');
+            const entry = document.createElement('div');
+            entry.className = "log-entry";
+            entry.innerText = `[${new Date().toLocaleTimeString('ar-EG')}] ${text}`;
+            box.appendChild(entry);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function showAdminAlert(txt) {
             const box = document.getElementById('alertBox');
-            box.innerText = txt;
-            box.className = "succ";
-            if(type === 'err') box.style.backgroundColor = "rgba(248, 81, 73, 0.15)";
-            box.style.display = 'block';
+            box.innerText = txt; box.className = "succ"; box.style.display = 'block';
             setTimeout(() => { box.style.display = 'none'; }, 3000);
         }
 
-        // 1. جلب بيانات المستخدمين بشكل حي وعرضها في الجدول والقائمة
-        const usersRef = ref(db, 'users');
-        onValue(usersRef, (snapshot) => {
-            const data = snapshot.val();
+        // 1. مزامنة بيانات المستخدمين واللاعبين حياً
+        onValue(ref(db, 'users'), (snapshot) => {
+            allUsersData = snapshot.val() || {};
+            renderTable(allUsersData);
+        });
+
+        function renderTable(data) {
             const tbody = document.getElementById('usersTableBody');
             const select = document.getElementById('userSelect');
-            
             tbody.innerHTML = '';
-            select.innerHTML = '<option value="">-- اختر لاعباً من القائمة --</option>';
+            select.innerHTML = '<option value="">-- اختر لاعباً --</option>';
             
-            if (!data) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">لا يوجد أي لاعبين مسجلين حالياً.</td></tr>';
-                document.getElementById('totalUsers').innerText = '0';
-                document.getElementById('topPlayer').innerText = 'لا يوجد';
-                return;
-            }
-
-            allUsersData = data;
-            let userCount = 0;
-            let maxPoints = -1;
-            let topPlayerName = "لا يوجد";
+            let userCount = 0; let maxPoints = -1; let topPlayerName = "لا يوجد";
 
             for (let uid in data) {
                 userCount++;
-                const player = data[uid];
-                const points = player.points || 0;
-                const username = player.username || "مستخدم مجهول";
+                const points = data[uid].points || 0;
+                const username = data[uid].username || "مجهول";
 
-                // حساب التوب بلاير
-                if (points > maxPoints) {
-                    maxPoints = points;
-                    topPlayerName = `${username} (${points}ن)`;
-                }
+                if (points > maxPoints) { maxPoints = points; topPlayerName = `${username} (${points} ن)`; }
 
-                // بناء صف الجدول
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><strong>${username}</strong></td><td>${points}ن</td><td><button class="btn btn-danger" onclick="kickUser('${uid}', '${username}')">طرد</button></td>`;
+                tbody.appendChild(tr);
+
+                const opt = document.createElement('option'); opt.value = uid; opt.text = username; select.appendChild(opt);
+            }
+            document.getElementById('totalUsers').innerText = userCount;
+            document.getElementById('topPlayer').innerText = topPlayerName;
+        }
+
+        // 2. مراقبة وجلب الرومات الحية (Rooms) وإدارتها بالكامل
+        onValue(ref(db, 'rooms'), (snapshot) => {
+            allRoomsData = snapshot.val() || {};
+            const tbody = document.getElementById('roomsTableBody');
+            const select = document.getElementById('roomSelect');
+            
+            tbody.innerHTML = '';
+            select.innerHTML = '<option value="">-- اختر غُرفة --</option>';
+            
+            const roomKeys = Object.keys(allRoomsData);
+            document.getElementById('totalRooms').innerText = roomKeys.length;
+
+            if (roomKeys.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#8b949e;">لا توجد رومات مفتوحة حالياً.</td></tr>';
+                return;
+            }
+
+            for (let roomId in allRoomsData) {
+                const room = allRoomsData[roomId];
+                const roomName = room.roomName || roomId;
+                const password = room.password ? room.password : "<span style='color:#8b949e;'>عام بدون باسوورد</span>";
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-weight:bold; color:#58a6ff;">${username}</td>
-                    <td style="font-size:12px; color:#8b949e;">${uid}</td>
-                    <td style="color:#3fb950; font-weight:bold;">${points} نقطة</td>
-                    <td>
-                        <button class="btn btn-danger" onclick="kickUser('${uid}', '${username}')">حظر وطرد ❌</button>
-                    </td>
+                    <td style="color:#d29922; font-weight:bold;">${roomName}</td>
+                    <td>${password}</td>
+                    <td><button class="btn btn-danger" onclick="deleteRoom('${roomId}')">حذف الجيم ❌</button></td>
                 `;
                 tbody.appendChild(tr);
 
-                // إضافة الخيارات لقائمة التعديل السريع
-                const opt = document.createElement('option');
-                opt.value = uid;
-                opt.text = username;
+                const opt = document.createElement('option'); opt.value = roomId; opt.text = roomName;
                 select.appendChild(opt);
             }
-
-            document.getElementById('totalUsers').innerText = userCount;
-            document.getElementById('topPlayer').innerText = topPlayerName;
         });
 
-        // 2. تحديث نقاط لاعب معين
+        // حذف وغلق روم مباشر من السيرفر
+        window.deleteRoom = function(roomId) {
+            if (confirm("هل تريد تفجير هذا الروم وطرد اللاعبين منه فوراً؟")) {
+                remove(ref(db, 'rooms/' + roomId)).then(() => {
+                    addLog(`تم حذف وإغلاق الروم [${roomId}] إجبارياً.`);
+                    showAdminAlert("تم حذف الروم بنجاح.");
+                });
+            }
+        };
+
+        // وضع كلمة سر لروم
+        window.setRoomPassword = function() {
+            const roomId = document.getElementById('roomSelect').value;
+            const pass = document.getElementById('roomPasswordInput').value.trim();
+            if (!roomId || !pass) return alert("اختر الروم واكتب الباسوورد!");
+
+            update(ref(db, 'rooms/' + roomId), { password: pass }).then(() => {
+                addLog(`تم وضع قفل وباسوورد جديد للروم [${roomId}]`);
+                showAdminAlert("تم تفعيل كلمة السر على الروم.");
+                document.getElementById('roomPasswordInput').value = '';
+            });
+        };
+
+        // 3. جلب وتحديث ميزات اللعبة وأسماء الحرامي والشرطي
+        onValue(ref(db, 'gameMechanics'), (snapshot) => {
+            const mechanics = snapshot.val();
+            if (mechanics) {
+                document.getElementById('thiefNameInput').value = mechanics.thiefName || '';
+                document.getElementById('bankerNameInput').value = mechanics.bankerName || '';
+                document.getElementById('thiefSpeedInput').value = mechanics.thiefSpeed || '';
+                document.getElementById('policePowerInput').value = mechanics.policePower || '';
+            }
+        });
+
+        window.updateGameMechanics = function() {
+            const thiefName = document.getElementById('thiefNameInput').value.trim();
+            const bankerName = document.getElementById('bankerNameInput').value.trim();
+            const thiefSpeed = parseInt(document.getElementById('thiefSpeedInput').value) || 10;
+            const policePower = parseInt(document.getElementById('policePowerInput').value) || 5;
+
+            set(ref(db, 'gameMechanics'), {
+                thiefName: thiefName,
+                bankerName: bankerName,
+                thiefSpeed: thiefSpeed,
+                policePower: policePower
+            }).then(() => {
+                addLog(`تعديل نظام اللعبة: الحرامي أصبح [${thiefName}] والشرطي [${bankerName}]`);
+                showAdminAlert("تم حفظ وتحديث ميزات اللعبة بالكامل!");
+            });
+        };
+
+        // باقي وظائف الإدارة القديمة والبحث السريع
+        window.searchPlayers = function() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (query === "") { renderTable(allUsersData); return; }
+            const filtered = {};
+            for (let uid in allUsersData) {
+                if (allUsersData[uid].username && allUsersData[uid].username.toLowerCase().includes(query)) { filtered[uid] = allUsersData[uid]; }
+            }
+            renderTable(filtered);
+        };
+
         window.updateUserPoints = function() {
             const uid = document.getElementById('userSelect').value;
             const pointsInput = document.getElementById('newPoints').value;
-
-            if (!uid) {
-                alert("برجاء اختيار لاعب أولاً!");
-                return;
-            }
-            if (pointsInput === "") {
-                alert("برجاء إدخال النقاط الجديدة!");
-                return;
-            }
-
-            const pCount = parseInt(pointsInput);
-            update(ref(db, 'users/' + uid), { points: pCount })
-                .then(() => {
-                    showAdminAlert("تم تحديث نقاط اللاعب بنجاح!", "succ");
-                    document.getElementById('newPoints').value = '';
-                });
+            if (!uid || pointsInput === "") return;
+            update(ref(db, 'users/' + uid), { points: parseInt(pointsInput) }).then(() => {
+                addLog(`تعديل نقاط [${allUsersData[uid].username}] لـ ${pointsInput}`);
+                document.getElementById('newPoints').value = '';
+            });
         };
 
-        // 3. طرد وحظر لاعب (حذفه من قاعدة البيانات)
+        window.giveBulkGift = function() {
+            const amount = document.getElementById('giftAmount').value;
+            if (!amount || amount <= 0) return;
+            const updates = {}; const val = parseInt(amount);
+            for (let uid in allUsersData) { updates[`/users/${uid}/points`] = (allUsersData[uid].points || 0) + val; }
+            update(ref(db), updates).then(() => {
+                addLog(`توزيع مكافأة جماعية لكل اللعيبة بقيمة +${val}`);
+                document.getElementById('giftAmount').value = '';
+            });
+        };
+
+        window.sendNotice = function() {
+            const text = document.getElementById('globalNotice').value.trim();
+            if (!text) return;
+            set(ref(db, 'serverSettings/notice'), text).then(() => { addLog(`بث إعلان: "${text}"`); });
+        };
+
+        window.clearNotice = function() {
+            set(ref(db, 'serverSettings/notice'), "").then(() => { document.getElementById('globalNotice').value = ''; });
+        };
+
         window.kickUser = function(uid, name) {
-            if (confirm(`هل أنت متأكد تماماً من حظر وطرد اللاعب [ ${name} ] نهائياً ومسح نقاطه؟`)) {
-                remove(ref(db, 'users/' + uid))
-                    .then(() => {
-                        showAdminAlert(`تم طرد الحساب ${name} بنجاح!`, "succ");
-                    });
-            }
+            if (confirm(`حظر وطرد [ ${name} ]؟`)) { remove(ref(db, 'users/' + uid)); }
         };
 
-        // 4. التحكم في حالة السيرفر (تعطيل/تشغيل الموقع)
         window.toggleServer = function() {
             isServerOnline = !isServerOnline;
             const btn = document.getElementById('toggleServerBtn');
             const statusText = document.getElementById('serverStatus');
-            
-            if (!isServerOnline) {
-                set(ref(db, 'serverSettings/status'), "offline");
-                btn.innerText = "تشغيل اللعبة الآن ✅";
-                btn.style.backgroundColor = "#238636";
-                statusText.innerText = "صيانة معطل ⚠️";
-                statusText.style.color = "#ff7b72";
-                showAdminAlert("تم تحويل اللعبة لوضع الصيانة بنجاح.", "succ");
-            } else {
-                set(ref(db, 'serverSettings/status'), "online");
-                btn.innerText = "تعطيل اللعبة مؤقتاً ⚠️";
-                btn.style.backgroundColor = "#388bfd";
-                statusText.innerText = "نشط ✅";
-                statusText.style.color = "#3fb950";
-                showAdminAlert("تمت إعادة تشغيل اللعبة للجميع بنجاح.", "succ");
-            }
-        };
-
-        // 5. تصفير نقاط الجميع للسيزون الجديد
-        window.resetAllPoints = function() {
-            if (confirm("🚨 تحذير أمني عالي الخطورة:\nهل أنت متأكد من تصفير نقاط جـمـيـع اللاعبين وبدء سيزون جديد؟ لا يمكن التراجع عن هذا القرار!")) {
-                const updates = {};
-                for (let uid in allUsersData) {
-                    updates[`/users/${uid}/points`] = 0;
+            const state = isServerOnline ? "online" : "offline";
+            set(ref(db, 'serverSettings/status'), state).then(() => {
+                if (!isServerOnline) {
+                    btn.innerText = "تشغيل اللعبة الآن ✅"; btn.style.backgroundColor = "#238636"; statusText.innerText = "صيانة معطل ⚠️"; statusText.style.color = "#ff7b72";
+                } else {
+                    btn.innerText = "تعطيل اللعبة مؤقتاً ⚠️"; btn.style.backgroundColor = "#388bfd"; statusText.innerText = "نشط ✅"; statusText.style.color = "#3fb950";
                 }
-                update(ref(db), updates).then(() => {
-                    showAdminAlert("تم تصفير نقاط السيرفر بالكامل! سيزون جديد سعيد.", "succ");
-                });
-            }
+            });
         };
 
-        // تسجيل الخروج والعودة لصفحة الدخول
-        window.logoutAdmin = function() {
-            window.location.href = "index.html";
-        };
+        window.logoutAdmin = function() { window.location.href = "index.html"; };
+        addLog("لوحة التحكم متصلة بنجاح وعينك على السيرفر.");
     </script>
 </body>
 </html>
