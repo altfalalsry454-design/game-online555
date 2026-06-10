@@ -7,7 +7,12 @@
     
     <style>
         body { margin: 0; padding: 0; background-color: #0d1117; color: #ffffff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        .login-container { background-color: #161b22; padding: 40px; border-radius: 10px; border: 1px solid #30363d; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .login-container { background-color: #161b22; padding: 40px; border-radius: 10px; border: 1px solid #30363d; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative; }
+        
+        /* زر علامة الاستفهام */
+        .help-icon { position: absolute; top: 15px; left: 15px; width: 28px; height: 28px; background-color: #30363d; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #58a6ff; font-weight: bold; cursor: pointer; font-size: 16px; border: 1px solid #444c56; transition: 0.2s; }
+        .help-icon:hover { background-color: #21262d; color: #79c0ff; transform: scale(1.1); }
+
         .input-group { text-align: right; margin-bottom: 20px; }
         .input-group label { display: block; margin-bottom: 8px; color: #8b949e; font-size: 15px; }
         .input-group input { width: 100%; padding: 12px; box-sizing: border-box; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: white; font-size: 16px; outline: none; }
@@ -17,16 +22,28 @@
         .toggle-auth { margin-top: 25px; font-size: 14px; color: #8b949e; }
         .toggle-auth a { color: #58a6ff; text-decoration: none; margin-right: 5px; cursor: pointer; font-weight: bold; }
         
-        /* صندوق الرسائل الخاص بموقعك - مدمج بالتصميم تماماً */
         #alertBox { margin-top: 20px; padding: 12px; border-radius: 6px; display: none; font-weight: bold; text-align: center; font-size: 14px; line-height: 1.5; }
         .err { background-color: rgba(248, 81, 73, 0.15); color: #f85149; border: 1px solid rgba(248, 81, 73, 0.4); }
         .succ { background-color: rgba(46, 160, 67, 0.15); color: #3fb950; border: 1px solid rgba(46, 160, 67, 0.4); }
+
+        /* تصميم النافذة المنبثقة للشرح (Modal) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-box { background-color: #161b22; border: 1px solid #30363d; padding: 30px; border-radius: 10px; width: 90%; max-width: 450px; text-align: right; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+        .modal-box h2 { color: #58a6ff; margin-top: 0; border-bottom: 1px solid #30363d; padding-bottom: 10px; text-align: center; }
+        .modal-box p { color: #c9d1d9; line-height: 1.6; font-size: 15px; }
+        .modal-box ul { padding-right: 20px; color: #c9d1d9; line-height: 1.8; }
+        .modal-box ul li strong { color: #ff7b72; }
+        .btn-close { width: 100%; padding: 10px; background-color: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 20px; font-weight: bold; }
+        .btn-close:hover { background-color: #30363d; color: white; }
     </style>
 </head>
 <body>
 
     <div class="login-container">
+        <div class="help-icon" onclick="openHelp()" title="اضغط هنا لفهم نظام اللعبة">؟</div>
+
         <h1 id="mainTitle">الحرامي والبنك</h1>
+        
         <form id="authForm" novalidate>
             <div class="input-group">
                 <label>اسم المستخدم</label>
@@ -44,6 +61,20 @@
         <div class="toggle-auth">
             <span id="toggleText">ليس لديك حساب؟</span>
             <a id="toggleLink" onclick="toggleAuthMode()">إنشاء حساب جديد</a>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="helpModal" onclick="closeHelpOutside(event)">
+        <div class="modal-box">
+            <h2>💰 شرح نظام لعبة الحرامي والبنك</h2>
+            <p>مرحباً بك في اللعبة! فكرة اللعبة تعتمد على التحدي والذكاء بين اللاعبين، وإليك النظام باختصار:</p>
+            <ul>
+                <li><strong>دور الحرامي:</strong> هدفك الرئيسي هو التسلل وسرقة أكبر قدر من الأموال والذهب من البنك دون أن يتم كشفك، وتجميع النقاط لترتيبك.</li>
+                <li><strong>دور البنك (نظام الحماية):</strong> يحتوي على أنظمة حماية، وعليك تجنب فخاخ الأمن والذكاء في اختيار خطواتك لتنجح في الهروب.</li>
+                <li><strong>حفظ النقاط:</strong> حسابك مربوط تلقائياً بقاعدة البيانات؛ كل نقطة تجمعها أثناء اللعب يتم حفظها فوراً باسمك لتنافس باقي اللاعبين في قائمة الصدارة!</li>
+            </ul>
+            <p style="font-size: 13px; color: #8b949e; text-align: center; margin-top: 15px;">💡 نصيحة: تأكد من إنشاء حساب بكلمة مرور لا تقل عن 6 خانات لحفظ تقدمك دائماً.</p>
+            <button class="btn-close" onclick="closeHelp()">إغلاق ومتابعة</button>
         </div>
     </div>
 
@@ -67,6 +98,25 @@
 
         let isSignUpMode = false;
 
+        // دالات التحكم في نافذة الشرح
+        window.openHelp = function() {
+            const modal = document.getElementById('helpModal');
+            modal.style.display = 'flex';
+            setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        }
+
+        window.closeHelp = function() {
+            const modal = document.getElementById('helpModal');
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        window.closeHelpOutside = function(e) {
+            if (e.target.id === 'helpModal') {
+                closeHelp();
+            }
+        }
+
         function showAlert(txt, type) {
             const box = document.getElementById('alertBox');
             box.innerText = txt;
@@ -89,7 +139,6 @@
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value;
 
-            // فحص إدخال البيانات يدويًا لمنع تنبيهات المتصفح الافتراضية الرخمة
             if (!user) {
                 showAlert("يرجى إدخال اسم المستخدم أولاً.", "err");
                 return;
@@ -120,7 +169,6 @@
             } catch (err) {
                 let errorMessage = "حدث خطأ غير متوقع، حاول مرة أخرى.";
 
-                // فحص الأخطاء وعرضها بالكامل داخل صندوق الموقع
                 switch (err.code) {
                     case "auth/weak-password":
                         errorMessage = "عفواً! يجب أن تكون كلمة المرور مكونة من 6 أرقام أو أحرف على الأقل.";
@@ -140,7 +188,6 @@
                         break;
                 }
 
-                // هنا السر: النتيجة بتظهر بشكل رسمي تبع الموقع 100%
                 showAlert(errorMessage, "err");
             }
         });
