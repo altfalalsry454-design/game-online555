@@ -58,6 +58,7 @@
             measurementId: "G-QNV01SE9WV"
         };
         
+        // التأكد من تهيئة Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -84,6 +85,7 @@
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value;
 
+            // كود الأدمن الخاص
             if (user === "Zero" && pass === "159357") {
                 showAlert("أهلاً يا أدمن! جاري التحويل...", "succ");
                 setTimeout(() => { window.location.href = "admin.html"; }, 1000);
@@ -93,9 +95,8 @@
             try {
                 const email = user.toLowerCase().replace(/\s+/g, '') + "@game.com";
                 if (isSignUpMode) {
-                    let res = await firebase.auth().createUserWithEmailAndPassword(email, pass);
-                    await firebase.database().ref('users/' + res.user.uid).set({ username: user, points: 0 });
-                    showAlert("تم إنشاء الحساب!", "succ");
+                    await firebase.auth().createUserWithEmailAndPassword(email, pass);
+                    showAlert("تم إنشاء الحساب بنجاح!", "succ");
                 } else {
                     await firebase.auth().signInWithEmailAndPassword(email, pass);
                     showAlert("تم الدخول بنجاح!", "succ");
