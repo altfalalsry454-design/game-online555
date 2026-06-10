@@ -43,7 +43,7 @@
         .room-row:last-child { border-bottom: none; }
         .join-mini-btn { background-color: #238636; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-        /* تقسيم شاشة الروم (اللاعبين والشات جنب بعض) */
+        /* تقسيم شاشة الروم */
         .room-layout { display: table; width: 100%; table-layout: fixed; border-spacing: 15px 0; }
         .room-column { display: table-cell; vertical-align: top; background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; }
         
@@ -146,7 +146,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set, once, onValue, off, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // كود قاعدة البيانات الفعلي والمباشر الخاص بك
         const firebaseConfig = {
             apiKey: "AIzaSyDCYnbAcV0HtrSyRUorBQmXQuBJO7m1C4A",
             authDomain: "zerobaba-7733e.firebaseapp.com",
@@ -157,11 +156,9 @@
             appId: "1:20311065718:web:5e50f0ad492d57f2518b57"
         };
 
-        // تهيئة فايربيز وقاعدة البيانات
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // جلب اسم المستخدم من صفحة تسجيل الدخول
         const urlParams = new URLSearchParams(window.location.search);
         const myUsername = urlParams.get('user') || "لاعب_" + Math.floor(1000 + Math.random() * 9000);
         document.getElementById('myUsernameDisplay').innerText = myUsername;
@@ -171,10 +168,12 @@
 
         function triggerAlert(msg, isError = false) {
             const alertBox = document.getElementById('alertBox');
-            alertBox.innerText = msg;
-            alertBox.className = isError ? "alert-error" : "alert-success";
-            alertBox.style.display = "block";
-            setTimeout(() => { alertBox.style.display = "none"; }, 3500);
+            if(alertBox) {
+                alertBox.innerText = msg;
+                alertBox.className = isError ? "alert-error" : "alert-success";
+                alertBox.style.display = "block";
+                setTimeout(() => { alertBox.style.display = "none"; }, 3500);
+            }
         }
 
         function switchScreen(screenId) {
@@ -182,7 +181,6 @@
             document.getElementById(screenId).classList.add('active-screen');
         }
 
-        // ربط الدوال بـ window لتتمكن أزرار الـ HTML من قراءتها وتنفيذها
         window.createRoomAction = function() {
             const roomName = document.getElementById('newRoomName').value.trim();
             if (!roomName) { triggerAlert("من فضلك أدخل اسم الروم أولاً!", true); return; }
@@ -258,7 +256,6 @@
             document.getElementById('newRoomName').value = "";
             document.getElementById('searchRoomCode').value = "";
 
-            // الاستماع اللحظي للاعبين
             onValue(ref(db, `rooms/${roomId}/players`), (snapshot) => {
                 const players = snapshot.val();
                 const container = document.getElementById('playersContainer');
@@ -277,8 +274,8 @@
                         } else if (isIAmOwner) {
                             badgeAndButtons = `
                                 <div>
-                                    <button class="action-mini-btn" style="background-color:#1f6feb; color:white;" onclick="transferOwnerOnline('${pId}', '${p.name}')">نقل الملكية</button>
-                                    <button class="action-mini-btn" style="background-color:#da3637; color:white;" onclick="kickPlayerOnline('${pId}')">طرد</button>
+                                    <button class="action-mini-btn" style="background-color:#1f6feb; color:white;" onclick="window.transferOwnerOnline('${pId}', '${p.name}')">نقل الملكية</button>
+                                    <button class="action-mini-btn" style="background-color:#da3637; color:white;" onclick="window.kickPlayerOnline('${pId}')">طرد</button>
                                 </div>
                             `;
                         }
@@ -298,7 +295,6 @@
                 }
             });
 
-            // الاستماع اللحظي للشات
             onValue(ref(db, `rooms/${roomId}/chat`), (snapshot) => {
                 const chats = snapshot.val();
                 const chatContainer = document.getElementById('chatMessagesContainer');
@@ -384,7 +380,7 @@
                                 <span style="color:#8b949e; font-size:13px; margin-right:10px;">(الكود: #${r.code})</span>
                                 <br><small style="color:#58a6ff;">اللاعبين داخل الروم: ${count}/8</small>
                             </div>
-                            <button class="join-mini-btn" onclick="directJoinFromList('${id}', '${r.name}', '${r.code}')">انضمام سريع</button>
+                            <button class="join-mini-btn" onclick="window.directJoinFromList('${id}', '${r.name}', '${r.code}')">انضمام سريع</button>
                         </div>
                     `;
                 }
