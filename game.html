@@ -4,19 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>واجهة اللعبة - الحرامي والبنك</title>
+    
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; padding: 0; background-color: #0d1117; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding-top: 70px; }
+        
+        /* الهيدر العلوي */
         header { position: fixed; top: 0; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 12px 25px; background-color: #161b22; border-bottom: 2px solid #30363d; z-index: 100; }
         .logo { font-size: 20px; font-weight: bold; color: #ff4757; }
         .user-tag { font-size: 15px; color: #58a6ff; }
+
+        /* حاوية الصفحة الرئيسية */
         .main-wrapper { max-width: 1200px; margin: 20px auto; padding: 0 15px; display: block; }
+        
+        /* الشاشات */
         .screen { display: none; }
         .active-screen { display: block; }
+
+        /* كروت وخانات اللوبي */
         .lobby-card { background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 25px; margin-bottom: 20px; text-align: right; }
         .lobby-card h2 { margin-top: 0; color: #f5f5f5; font-size: 18px; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
+        
         .input-field { width: 100%; padding: 12px; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #fff; font-size: 15px; margin-top: 10px; margin-bottom: 10px; text-align: right; }
         .input-field:focus { border-color: #58a6ff; outline: none; }
+        
         .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; text-align: center; }
         .btn-green { background-color: #238636; color: white; }
         .btn-green:hover { background-color: #2ea043; }
@@ -24,15 +35,19 @@
         .btn-blue:hover { background-color: #388bfd; }
         .btn-red { background-color: #da3637; color: white; }
         .btn-red:hover { background-color: #f85149; }
+
         .rooms-grid { background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; max-height: 250px; overflow-y: auto; margin-top: 10px; }
         .room-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #21262d; }
         .room-row:last-child { border-bottom: none; }
         .join-mini-btn { background-color: #238636; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
         .room-layout { display: table; width: 100%; table-layout: fixed; border-spacing: 15px 0; }
         .room-column { display: table-cell; vertical-align: top; background-color: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; }
+        
         .player-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; margin-bottom: 10px; }
         .host-badge { color: #f1c40f; font-weight: bold; font-size: 13px; }
         .action-mini-btn { padding: 4px 8px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; font-weight: bold; }
+
         .chat-area { display: flex; flex-direction: column; height: 300px; }
         .chat-messages { flex-grow: 1; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 10px; overflow-y: auto; font-size: 14px; text-align: right; }
         .chat-msg-item { margin-bottom: 8px; line-height: 1.4; }
@@ -40,10 +55,14 @@
         .chat-input-group { display: table; width: 100%; margin-top: 10px; }
         .chat-input-cell { display: table-cell; width: 80%; }
         .chat-btn-cell { display: table-cell; width: 20%; padding-right: 8px; }
+
         #alertBox { padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; font-weight: bold; text-align: center; }
         .alert-success { background-color: rgba(35, 134, 54, 0.2); color: #238636; border: 1px solid #238636; }
         .alert-error { background-color: rgba(218, 54, 55, 0.2); color: #da3637; border: 1px solid #da3637; }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -61,6 +80,7 @@
                 <input type="text" id="newRoomName" class="input-field" placeholder="اكتب اسم الروم هنا...">
                 <button class="btn btn-green" onclick="createRoomAction()">اضغط هنا لإنشاء الروم وتصبح المالك</button>
             </div>
+
             <div class="lobby-card">
                 <h2>🚪 رومات اللعبة النشطة أونلاين</h2>
                 <div class="rooms-grid" id="roomsContainer">
@@ -68,6 +88,7 @@
                 </div>
                 <button class="btn btn-blue" style="margin-top: 10px; padding: 8px;" onclick="refreshRoomsList()">🔄 تحديث قائمة الرومات المتاحة</button>
             </div>
+
             <div class="lobby-card">
                 <h2>🔑 انضمام إلى الروم (عن طريق الكود)</h2>
                 <input type="text" id="searchRoomCode" class="input-field" placeholder="أدخل كود الروم المكون من 4 أرقام...">
@@ -82,14 +103,17 @@
                     كود الدخول السريع: <span id="roomCode" style="color: #f1c40f; font-weight: bold; font-size: 20px;">#0000</span>
                 </div>
             </div>
+
             <div class="room-layout">
                 <div class="room-column">
                     <h3 style="margin-top: 0; border-bottom: 1px solid #30363d; padding-bottom: 8px;">👤 قائمة اللاعبين في الروم</h3>
                     <div id="playersContainer" style="min-height: 200px;"></div>
+                    
                     <div id="ownerControls" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #30363d;">
                         <button class="btn btn-green" onclick="startGameAction()">🚀 ابدأ اللعبة الآن</button>
                     </div>
                 </div>
+
                 <div class="room-column">
                     <h3 style="margin-top: 0; border-bottom: 1px solid #30363d; padding-bottom: 8px;">💬 شات بوكس الروم (مباشر)</h3>
                     <div class="chat-area">
@@ -105,20 +129,13 @@
                     </div>
                 </div>
             </div>
+
             <button class="btn btn-red" style="margin-top: 20px;" onclick="leaveRoomAction()">🚪 مغادرة الغرفة والعودة للوبي</button>
         </div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const myUsername = urlParams.get('user') || "لاعب_" + Math.floor(1000 + Math.random() * 9000);
-        document.getElementById('myUsernameDisplay').innerText = myUsername;
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, set, once, onValue, off, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
+        // كود الـ Config الفعلي والربط المباشر بقاعدتك
         const firebaseConfig = {
             apiKey: "AIzaSyDCYnbAcV0HtrSyRUorBQmXQuBJO7m1C4A",
             authDomain: "zerobaba-7733e.firebaseapp.com",
@@ -129,8 +146,14 @@
             appId: "1:20311065718:web:5e50f0ad492d57f2518b57"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        // تهيئة فايربيز بالطريقة المضمونة
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // جلب اسم المستخدم فوراً
+        const urlParams = new URLSearchParams(window.location.search);
+        const myUsername = urlParams.get('user') || "لاعب_" + Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('myUsernameDisplay').innerText = myUsername;
 
         let currentRoomId = null;
         let isIAmOwner = false;
@@ -150,13 +173,13 @@
             document.getElementById(screenId).classList.add('active-screen');
         }
 
-        window.createRoomAction = function() {
+        function createRoomAction() {
             const roomName = document.getElementById('newRoomName').value.trim();
             if (!roomName) { triggerAlert("من فضلك أدخل اسم الروم أولاً!", true); return; }
 
             const roomCode = Math.floor(1000 + Math.random() * 9000).toString();
-            const roomsRef = ref(db, 'rooms');
-            const newRoomRef = push(roomsRef);
+            const roomsRef = db.ref('rooms');
+            const newRoomRef = roomsRef.push();
             const roomId = newRoomRef.key;
 
             const roomData = {
@@ -166,22 +189,22 @@
                 status: "waiting"
             };
 
-            set(newRoomRef, roomData).then(() => {
-                const playerRef = push(ref(db, `rooms/${roomId}/players`));
-                set(playerRef, {
+            newRoomRef.set(roomData).then(() => {
+                const playerRef = db.ref(`rooms/${roomId}/players`).push();
+                playerRef.set({
                     name: myUsername,
                     role: "Owner"
                 }).then(() => {
                     enterRoomLocalSetup(roomName, roomCode, true, roomId);
                 });
             }).catch(err => triggerAlert("خطأ أثناء إنشاء الروم: " + err.message, true));
-        };
+        }
 
-        window.joinRoomByCodeAction = function() {
+        function joinRoomByCodeAction() {
             const codeInput = document.getElementById('searchRoomCode').value.trim();
             if (!codeInput) { triggerAlert("من فضلك أدخل كود الروم المكون من 4 أرقام!", true); return; }
 
-            once(ref(db, 'rooms')).then((snapshot) => {
+            db.ref('rooms').once('value').then((snapshot) => {
                 const rooms = snapshot.val();
                 let foundRoomId = null;
                 let foundRoomData = null;
@@ -200,8 +223,8 @@
                     const currentPlayersCount = foundRoomData.players ? Object.keys(foundRoomData.players).length : 0;
                     if (currentPlayersCount >= 8) { triggerAlert("هذا الروم ممتلئ بالفعل!", true); return; }
 
-                    const playerRef = push(ref(db, `rooms/${foundRoomId}/players`));
-                    set(playerRef, {
+                    const playerRef = db.ref(`rooms/${foundRoomId}/players`).push();
+                    playerRef.set({
                         name: myUsername,
                         role: "Player"
                     }).then(() => {
@@ -211,7 +234,7 @@
                     triggerAlert("لم يتم العثور على روم بهذا الكود! تأكد من الرقم.", true);
                 }
             });
-        };
+        }
 
         function enterRoomLocalSetup(name, code, isOwner, roomId) {
             currentRoomId = roomId;
@@ -225,7 +248,8 @@
             document.getElementById('newRoomName').value = "";
             document.getElementById('searchRoomCode').value = "";
 
-            onValue(ref(db, `rooms/${roomId}/players`), (snapshot) => {
+            // الاستماع للاعبين
+            db.ref(`rooms/${roomId}/players`).on('value', (snapshot) => {
                 const players = snapshot.val();
                 const container = document.getElementById('playersContainer');
                 container.innerHTML = "";
@@ -243,8 +267,8 @@
                         } else if (isIAmOwner) {
                             badgeAndButtons = `
                                 <div>
-                                    <button class="action-mini-btn" style="background-color:#1f6feb; color:white;" onclick="window.transferOwnerOnline('${pId}', '${p.name}')">نقل الملكية</button>
-                                    <button class="action-mini-btn" style="background-color:#da3637; color:white;" onclick="window.kickPlayerOnline('${pId}')">طرد</button>
+                                    <button class="action-mini-btn" style="background-color:#1f6feb; color:white;" onclick="transferOwnerOnline('${pId}', '${p.name}')">نقل الملكية</button>
+                                    <button class="action-mini-btn" style="background-color:#da3637; color:white;" onclick="kickPlayerOnline('${pId}')">طرد</button>
                                 </div>
                             `;
                         }
@@ -264,7 +288,8 @@
                 }
             });
 
-            onValue(ref(db, `rooms/${roomId}/chat`), (snapshot) => {
+            // الاستماع للشات بوكس
+            db.ref(`rooms/${roomId}/chat`).on('value', (snapshot) => {
                 const chats = snapshot.val();
                 const chatContainer = document.getElementById('chatMessagesContainer');
                 chatContainer.innerHTML = "";
@@ -284,51 +309,51 @@
             });
         }
 
-        window.sendChatMessage = function() {
+        function sendChatMessage() {
             const input = document.getElementById('chatMessageInput');
             const txt = input.value.trim();
             if (!txt || !currentRoomId) return;
 
-            const chatRef = push(ref(db, `rooms/${currentRoomId}/chat`));
-            set(chatRef, {
+            const chatRef = db.ref(`rooms/${currentRoomId}/chat`).push();
+            chatRef.set({
                 user: myUsername,
                 text: txt
             });
             input.value = "";
-        };
+        }
 
-        window.kickPlayerOnline = function(playerKey) {
+        function kickPlayerOnline(playerKey) {
             if (confirm("هل أنت متأكد من طرد هذا اللاعب؟")) {
-                remove(ref(db, `rooms/${currentRoomId}/players/${playerKey}`))
+                db.ref(`rooms/${currentRoomId}/players/${playerKey}`).remove()
                     .then(() => triggerAlert("تم طرد اللاعب بنجاح."));
             }
-        };
+        }
 
-        window.transferOwnerOnline = function(playerKey, playerName) {
+        function transferOwnerOnline(playerKey, playerName) {
             if (confirm(`هل تريد نقل ملكية الروم بالكامل إلى ${playerName}؟`)) {
-                set(ref(db, `rooms/${currentRoomId}/players/${playerKey}/role`), "Owner").then(() => {
-                    once(ref(db, `rooms/${currentRoomId}/players`)).then((snapshot) => {
+                db.ref(`rooms/${currentRoomId}/players/${playerKey}/role`).set("Owner").then(() => {
+                    db.ref(`rooms/${currentRoomId}/players`).once('value').then((snapshot) => {
                         const players = snapshot.val();
                         if (players) {
                             for (let id in players) {
                                 if (players[id].name === myUsername) {
-                                    set(ref(db, `rooms/${currentRoomId}/players/${id}/role`), "Player");
+                                    db.ref(`rooms/${currentRoomId}/players/${id}/role`).set("Player");
                                     break;
                                 }
                             }
                         }
                         isIAmOwner = false;
-                        set(ref(db, `rooms/${currentRoomId}/owner`), playerName);
+                        db.ref(`rooms/${currentRoomId}/owner`).set(playerName);
                         document.getElementById('ownerControls').style.display = "none";
                         triggerAlert("تم نقل ملكية الروم، تحولت الآن إلى لاعب عادي!");
                         enterRoomLocalSetup(document.getElementById('roomTitle').innerText, document.getElementById('roomCode').innerText.replace('#',''), false, currentRoomId);
                     });
                 });
             }
-        };
+        }
 
-        window.refreshRoomsList = function() {
-            once(ref(db, 'rooms')).then((snapshot) => {
+        function refreshRoomsList() {
+            db.ref('rooms').once('value').then((snapshot) => {
                 const rooms = snapshot.val();
                 const container = document.getElementById('roomsContainer');
                 container.innerHTML = "";
@@ -349,34 +374,34 @@
                                 <span style="color:#8b949e; font-size:13px; margin-right:10px;">(الكود: #${r.code})</span>
                                 <br><small style="color:#58a6ff;">اللاعبين داخل الروم: ${count}/8</small>
                             </div>
-                            <button class="join-mini-btn" onclick="window.directJoinFromList('${id}', '${r.name}', '${r.code}')">انضمام سريع</button>
+                            <button class="join-mini-btn" onclick="directJoinFromList('${id}', '${r.name}', '${r.code}')">انضمام سريع</button>
                         </div>
                     `;
                 }
             });
-        };
+        }
 
-        window.directJoinFromList = function(roomId, rName, rCode) {
-            const playerRef = push(ref(db, `rooms/${roomId}/players`));
-            set(playerRef, {
+        function directJoinFromList(roomId, rName, rCode) {
+            const playerRef = db.ref(`rooms/${roomId}/players`).push();
+            playerRef.set({
                 name: myUsername,
                 role: "Player"
             }).then(() => {
                 enterRoomLocalSetup(rName, rCode, false, roomId);
             });
-        };
+        }
 
-        window.leaveRoomAction = function() {
+        function leaveRoomAction() {
             if (currentRoomId) {
-                off(ref(db, `rooms/${currentRoomId}/players`));
-                off(ref(db, `rooms/${currentRoomId}/chat`));
+                db.ref(`rooms/${currentRoomId}/players`).off();
+                db.ref(`rooms/${currentRoomId}/chat`).off();
 
-                once(ref(db, `rooms/${currentRoomId}/players`)).then((snapshot) => {
+                db.ref(`rooms/${currentRoomId}/players`).once('value').then((snapshot) => {
                     const players = snapshot.val();
                     if (players) {
                         for (let id in players) {
                             if (players[id].name === myUsername) {
-                                remove(ref(db, `rooms/${currentRoomId}/players/${id}`));
+                                db.ref(`rooms/${currentRoomId}/players/${id}`).remove();
                                 break;
                             }
                         }
@@ -386,20 +411,21 @@
             } else {
                 exitRoomUIReset();
             }
-        };
+        }
 
         function exitRoomUIReset() {
             currentRoomId = null;
             isIAmOwner = false;
             switchScreen('lobbyScreen');
-            window.refreshRoomsList();
+            refreshRoomsList();
         }
 
-        window.startGameAction = function() {
+        function startGameAction() {
             triggerAlert("🔥 انطلقت الجولة الأولى أونلاين وجاري تحديد الأدوار!");
-        };
+        }
 
-        setTimeout(() => { window.refreshRoomsList(); }, 500);
+        // جلب قائمة الرومات تلقائياً بعد نصف ثانية من التحميل
+        setTimeout(refreshRoomsList, 500);
     </script>
 </body>
 </html>
