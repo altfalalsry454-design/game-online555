@@ -3,121 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم المطلقة للأدمن - Zero</title>
-    <!-- مكتبات Firebase الأساسية للربط أونلاين -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
+    <title>لوحة التحكم - أدمن الحرامي والبنك</title>
+    
     <style>
-        body { margin: 0; padding: 0; background-color: #0d1117; color: #ffffff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
-        .admin-box { background-color: #161b22; padding: 40px; border-radius: 10px; border: 1px solid #ff4757; width: 100%; max-width: 550px; text-align: center; box-shadow: 0 10px 30px rgba(255, 71, 87, 0.2); }
-        .input-group { text-align: right; margin-bottom: 20px; }
-        .input-group label { display: block; margin-bottom: 8px; color: #8b949e; font-weight: bold; font-size: 14px; }
-        .input-group input, .input-group select { width: 100%; padding: 12px; box-sizing: border-box; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: white; font-size: 16px; }
-        .input-group input:focus, .input-group select:focus { border-color: #ff4757; outline: none; }
+        body { margin: 0; padding: 20px; background-color: #0d1117; color: #ffffff; font-family: sans-serif; box-sizing: border-box; }
+        .admin-container { max-width: 1200px; margin: 0 auto; }
         
-        button { width: 100%; padding: 14px; background-color: #ff4757; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 15px; }
-        button:hover { background-color: #ff6b81; }
+        /* الهيدر والإحصائيات */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 30px; }
+        .header h1 { color: #58a6ff; margin: 0; }
+        .btn-logout { padding: 10px 20px; background-color: #21262d; border: 1px solid #30363d; color: #ff7b72; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-logout:hover { background-color: #f85149; color: white; }
         
-        /* تنبيه الحفظ الداخلي */
-        #adminAlert { margin-top: 20px; padding: 12px; border-radius: 5px; display: none; background-color: #23863652; color: #238636; border: 1px solid #238636; font-weight: bold; text-align: center; }
-        .logout-link { color: #8b949e; text-decoration: none; display: block; margin-top: 25px; font-size: 14px; transition: 0.2s; }
-        .logout-link:hover { color: #ff4757; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, min-max(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background-color: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 8px; text-align: center; }
+        .stat-card h3 { margin: 0 0 10px 0; color: #8b949e; font-size: 16px; }
+        .stat-card p { margin: 0; font-size: 28px; font-weight: bold; color: #58a6ff; }
+
+        /* التحكم الرئيسي بالموقع */
+        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
+        
+        .card { background-color: #161b22; border: 1px solid #30363d; padding: 25px; border-radius: 8px; margin-bottom: 20px; }
+        .card h2 { margin-top: 0; color: #c9d1d9; border-bottom: 1px solid #30363d; padding-bottom: 10px; font-size: 18px; }
+
+        /* تصميم الجدول */
+        table { width: 100%; border-collapse: collapse; text-align: right; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid #30363d; }
+        th { color: #8b949e; background-color: #0d1117; }
+        tr:hover { background-color: #21262d; }
+        
+        /* أزرار وحقول إدخال */
+        .input-style { width: 100%; padding: 10px; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        .btn { padding: 10px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: inline-block; }
+        .btn-success { background-color: #238636; color: white; width: 100%; }
+        .btn-success:hover { background-color: #2ea043; }
+        .btn-danger { background-color: rgba(248, 81, 73, 0.15); color: #f85149; border: 1px solid rgba(248, 81, 73, 0.4); padding: 5px 10px; font-size: 13px; }
+        .btn-danger:hover { background-color: #f85149; color: white; }
+        .btn-system { background-color: #388bfd; color: white; margin-left: 10px; }
+        
+        #alertBox { padding: 10px; border-radius: 6px; margin-bottom: 15px; display: none; text-align: center; font-weight: bold; }
+        .succ { background-color: rgba(46, 160, 67, 0.15); color: #3fb950; border: 1px solid rgba(46, 160, 67, 0.4); }
     </style>
 </head>
 <body>
 
-    <div class="admin-box">
-        <h1 style="color:#ff4757; margin-top: 0; margin-bottom:10px;">🖥️ لوحة التحكم المطلقة (Zero)</h1>
-        <p style="color:#8b949e; margin-bottom:30px;">تعديل ميكانيكا اللعبة، العدادات، وصلاحيات السيرفر بالكامل:</p>
-
-        <!-- 1️⃣ تعديل أسماء الأدوار -->
-        <div class="input-group">
-            <label>تعديل مسمى فريق اللصوص (الحرامية)</label>
-            <input type="text" id="thiefTitle" value="الحرامية">
+    <div class="admin-container">
+        <div class="header">
+            <h1>🛠️ لوحة تحكم الإدارة العليا (Zero)</h1>
+            <button class="btn-logout" onclick="logoutAdmin()">تسجيل الخروج</button>
         </div>
 
-        <div class="input-group">
-            <label>تعديل مسمى فريق التخريب (مدير البنك)</label>
-            <input type="text" id="managerTitle" value="مدير البنك المخرب">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>إجمالي اللاعبين المسجلين</h3>
+                <p id="totalUsers">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>إمبراطور السرقة (أعلى نقاط)</h3>
+                <p id="topPlayer" style="font-size: 20px; color: #ff7b72;">لا يوجد</p>
+            </div>
+            <div class="stat-card">
+                <h3>حالة سيرفر اللعبة</h3>
+                <p id="serverStatus" style="color: #3fb950;">نشط ✅</p>
+            </div>
         </div>
 
-        <!-- 2️⃣ ميكانيكا وسرعة اللعبة -->
-        <div class="input-group">
-            <label>سرعة تنازل عداد الأبواب (بالثانية - كل ما قل الرقم زادت السرعة)</label>
-            <input type="number" id="counterSpeed" value="1" step="0.1" min="0.1">
-        </div>
+        <div id="alertBox"></div>
 
-        <!-- 3️⃣ متجر الميزات النقاط -->
-        <div class="input-group">
-            <label>سعر شراء الميزات العشوائية في المتجر (بالنقاط)</label>
-            <input type="number" id="priceFeatures" value="3000" step="500">
-        </div>
+        <div class="main-grid">
+            
+            <div class="card">
+                <h2>👥 قائمة اللاعبين والتحكم بالحسابات</h2>
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم المستخدم (اللاعب)</th>
+                                <th>معرف الـ UID</th>
+                                <th>النقاط الحالية</th>
+                                <th>إجراءات إدارية</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="4" style="text-align:center; color:#8b949e;">جاري تحميل اللاعبين من قاعدة البيانات...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-        <!-- 4️⃣ التحكم في السيرفر -->
-        <div class="input-group">
-            <label>حالة السيرفر العامة للموقع</label>
-            <select id="serverStatus">
-                <option value="online">🟢 مستقر وشغال للجميع (Online)</option>
-                <option value="maintenance">🔴 صيانة مؤقتة للموقع (Maintenance)</option>
-            </select>
-        </div>
+            <div>
+                <div class="card">
+                    <h2>✏️ تعديل سريع على نقاط لاعب</h2>
+                    <label style="color:#8b949e; display:block; margin-bottom:5px;">اختر اللاعب:</label>
+                    <select id="userSelect" class="input-style">
+                        <option value="">-- اختر لاعباً من القائمة --</option>
+                    </select>
+                    
+                    <label style="color:#8b949e; display:block; margin-bottom:5px;">النقاط الجديدة:</label>
+                    <input type="number" id="newPoints" class="input-style" placeholder="أدخل عدد النقاط الجديد">
+                    
+                    <button class="btn btn-success" onclick="updateUserPoints()">تحديث النقاط فوراً</button>
+                </div>
 
-        <!-- زر الحفظ أونلاين -->
-        <button onclick="saveGlobalSettings()">💾 حفظ كل الإعدادات وتحديث اللعبة فوراً</button>
-        
-        <!-- صندوق التنبيه الداخلي بدون نوافذ خارجية -->
-        <div id="adminAlert">تم حفظ التعديلات وتحديث قاعدة البيانات أونلاين! 🔥</div>
-        
-        <a href="login.html" class="logout-link">← تسجيل الخروج والعودة للرئيسية</a>
+                <div class="card">
+                    <h2>⚙️ إعدادات النظام العام للموقع</h2>
+                    <p style="font-size:13px; color:#8b949e;">تحكم كامل في قواعد وعمل موقع اللعبة حالياً:</p>
+                    
+                    <button class="btn btn-system" id="toggleServerBtn" onclick="toggleServer()">تعطيل اللعبة مؤقتاً ⚠️</button>
+                    <button class="btn btn-danger" onclick="resetAllPoints()" style="margin-top: 15px; width: 100%;">🔴 تصفير نقاط كل اللاعبين (سيزون جديد)</button>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <script>
-        // 🛠️ تم ربط الفايربيز الخاص بك بنجاح
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update, remove, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyDCYnbAcV0HtrSyRUorBQmXQuBJO7m1C4A",
             authDomain: "zerobaba-7733e.firebaseapp.com",
             projectId: "zerobaba-7733e",
             storageBucket: "zerobaba-7733e.firebasestorage.app",
             messagingSenderId: "20311065718",
-            appId: "1:20311065718:web:5e50f0ad492d57f2518b57",
-            measurementId: "G-QNV01SE9WV"
+            appId: "1:20311065718:web:5e50f0ad492d57f2518b57"
         };
-        
-        firebase.initializeApp(firebaseConfig);
-        
-        // أول ما الصفحة تفتح، تجيب الإعدادات القديمة المتسيفة في الفايربيز وتحطها في الخانات تلقائياً
-        firebase.database().ref('gameSettings/').once('value').then((snapshot) => {
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let allUsersData = {};
+        let isServerOnline = true;
+
+        function showAdminAlert(txt, type) {
+            const box = document.getElementById('alertBox');
+            box.innerText = txt;
+            box.className = "succ";
+            if(type === 'err') box.style.backgroundColor = "rgba(248, 81, 73, 0.15)";
+            box.style.display = 'block';
+            setTimeout(() => { box.style.display = 'none'; }, 3000);
+        }
+
+        // 1. جلب بيانات المستخدمين بشكل حي وعرضها في الجدول والقائمة
+        const usersRef = ref(db, 'users');
+        onValue(usersRef, (snapshot) => {
             const data = snapshot.val();
-            if (data) {
-                if(data.thiefTitle) document.getElementById('thiefTitle').value = data.thiefTitle;
-                if(data.managerTitle) document.getElementById('managerTitle').value = data.managerTitle;
-                if(data.counterSpeed) document.getElementById('counterSpeed').value = data.counterSpeed;
-                if(data.priceFeatures) document.getElementById('priceFeatures').value = data.priceFeatures;
-                if(data.serverStatus) document.getElementById('serverStatus').value = data.serverStatus;
+            const tbody = document.getElementById('usersTableBody');
+            const select = document.getElementById('userSelect');
+            
+            tbody.innerHTML = '';
+            select.innerHTML = '<option value="">-- اختر لاعباً من القائمة --</option>';
+            
+            if (!data) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">لا يوجد أي لاعبين مسجلين حالياً.</td></tr>';
+                document.getElementById('totalUsers').innerText = '0';
+                document.getElementById('topPlayer').innerText = 'لا يوجد';
+                return;
             }
+
+            allUsersData = data;
+            let userCount = 0;
+            let maxPoints = -1;
+            let topPlayerName = "لا يوجد";
+
+            for (let uid in data) {
+                userCount++;
+                const player = data[uid];
+                const points = player.points || 0;
+                const username = player.username || "مستخدم مجهول";
+
+                // حساب التوب بلاير
+                if (points > maxPoints) {
+                    maxPoints = points;
+                    topPlayerName = `${username} (${points}ن)`;
+                }
+
+                // بناء صف الجدول
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:bold; color:#58a6ff;">${username}</td>
+                    <td style="font-size:12px; color:#8b949e;">${uid}</td>
+                    <td style="color:#3fb950; font-weight:bold;">${points} نقطة</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="kickUser('${uid}', '${username}')">حظر وطرد ❌</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+
+                // إضافة الخيارات لقائمة التعديل السريع
+                const opt = document.createElement('option');
+                opt.value = uid;
+                opt.text = username;
+                select.appendChild(opt);
+            }
+
+            document.getElementById('totalUsers').innerText = userCount;
+            document.getElementById('topPlayer').innerText = topPlayerName;
         });
 
-        // دالة حفظ الإعدادات وإرسالها لـ Firebase
-        function saveGlobalSettings() {
-            const settings = {
-                thiefTitle: document.getElementById('thiefTitle').value.trim(),
-                managerTitle: document.getElementById('managerTitle').value.trim(),
-                counterSpeed: parseFloat(document.getElementById('counterSpeed').value) || 1,
-                priceFeatures: parseInt(document.getElementById('priceFeatures').value) || 3000,
-                serverStatus: document.getElementById('serverStatus').value
-            };
+        // 2. تحديث نقاط لاعب معين
+        window.updateUserPoints = function() {
+            const uid = document.getElementById('userSelect').value;
+            const pointsInput = document.getElementById('newPoints').value;
 
-            // رفع الداتا على قاعدة البيانات أونلاين
-            firebase.database().ref('gameSettings/').set(settings);
+            if (!uid) {
+                alert("برجاء اختيار لاعب أولاً!");
+                return;
+            }
+            if (pointsInput === "") {
+                alert("برجاء إدخال النقاط الجديدة!");
+                return;
+            }
 
-            // إظهار التنبيه الأنيق جوة الموقع
-            const alertBox = document.getElementById('adminAlert');
-            alertBox.style.display = 'block';
+            const pCount = parseInt(pointsInput);
+            update(ref(db, 'users/' + uid), { points: pCount })
+                .then(() => {
+                    showAdminAlert("تم تحديث نقاط اللاعب بنجاح!", "succ");
+                    document.getElementById('newPoints').value = '';
+                });
+        };
+
+        // 3. طرد وحظر لاعب (حذفه من قاعدة البيانات)
+        window.kickUser = function(uid, name) {
+            if (confirm(`هل أنت متأكد تماماً من حظر وطرد اللاعب [ ${name} ] نهائياً ومسح نقاطه؟`)) {
+                remove(ref(db, 'users/' + uid))
+                    .then(() => {
+                        showAdminAlert(`تم طرد الحساب ${name} بنجاح!`, "succ");
+                    });
+            }
+        };
+
+        // 4. التحكم في حالة السيرفر (تعطيل/تشغيل الموقع)
+        window.toggleServer = function() {
+            isServerOnline = !isServerOnline;
+            const btn = document.getElementById('toggleServerBtn');
+            const statusText = document.getElementById('serverStatus');
             
-            // إخفاء التنبيه بعد 3 ثوانٍ
-            setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
-        }
+            if (!isServerOnline) {
+                set(ref(db, 'serverSettings/status'), "offline");
+                btn.innerText = "تشغيل اللعبة الآن ✅";
+                btn.style.backgroundColor = "#238636";
+                statusText.innerText = "صيانة معطل ⚠️";
+                statusText.style.color = "#ff7b72";
+                showAdminAlert("تم تحويل اللعبة لوضع الصيانة بنجاح.", "succ");
+            } else {
+                set(ref(db, 'serverSettings/status'), "online");
+                btn.innerText = "تعطيل اللعبة مؤقتاً ⚠️";
+                btn.style.backgroundColor = "#388bfd";
+                statusText.innerText = "نشط ✅";
+                statusText.style.color = "#3fb950";
+                showAdminAlert("تمت إعادة تشغيل اللعبة للجميع بنجاح.", "succ");
+            }
+        };
+
+        // 5. تصفير نقاط الجميع للسيزون الجديد
+        window.resetAllPoints = function() {
+            if (confirm("🚨 تحذير أمني عالي الخطورة:\nهل أنت متأكد من تصفير نقاط جـمـيـع اللاعبين وبدء سيزون جديد؟ لا يمكن التراجع عن هذا القرار!")) {
+                const updates = {};
+                for (let uid in allUsersData) {
+                    updates[`/users/${uid}/points`] = 0;
+                }
+                update(ref(db), updates).then(() => {
+                    showAdminAlert("تم تصفير نقاط السيرفر بالكامل! سيزون جديد سعيد.", "succ");
+                });
+            }
+        };
+
+        // تسجيل الخروج والعودة لصفحة الدخول
+        window.logoutAdmin = function() {
+            window.location.href = "index.html";
+        };
     </script>
 </body>
 </html>
