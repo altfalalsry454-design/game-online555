@@ -81,19 +81,18 @@
     </div>
 
     <script>
-        // 🛠️ تم ربط الفايربيز الخاص بك بنجاح
+        // الإعدادات المصححة والموحدة للمشروع
         const firebaseConfig = {
-            apiKey: "AIzaSyDCYnbAcV0HtrSyRUorBQmXQuBJO7m1C4A",
-            authDomain: "zerobaba-7733e.firebaseapp.com",
-            projectId: "zerobaba-7733e",
-            storageBucket: "zerobaba-7733e.firebasestorage.app",
-            messagingSenderId: "20311065718",
-            appId: "1:20311065718:web:5e50f0ad492d57f2518b57",
-            measurementId: "G-QNV01SE9WV"
+            apiKey: "AIzaSyDzh9haIp8fLivWBGIGTMZShiL5YV-3fKQ",
+            authDomain: "zero-feea1.firebaseapp.com",
+            projectId: "zero-feea1",
+            storageBucket: "zero-feea1.firebasestorage.app",
+            messagingSenderId: "51578202386",
+            appId: "1:51578202386:web:d75b98548d27ea8342abcb",
+            measurementId: "G-7Y4N19BK10"
         };
         
         firebase.initializeApp(firebaseConfig);
-        تفعيل التحليلات
 
         const myUsername = "لاعب_" + Math.floor(Math.random() * 9000);
         document.getElementById('myUsernameDisplay').innerText = myUsername;
@@ -161,7 +160,6 @@
                         if(players[id].name === myUsername) roomRef.child('players/' + id).remove();
                     }
                 });
-                // التحقق من حذف الروم إذا أصبح فارغاً
                 roomRef.child('players').once('value', snap => {
                     if (!snap.exists()) roomRef.remove();
                     location.reload();
