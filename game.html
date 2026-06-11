@@ -44,4 +44,224 @@
         .btn-red { background: #da3637; color: white; width: 100%; max-width: 500px; padding: 15px; font-size: 18px; margin-top: 20px; }
         
         /* الزرار الأخضر الكبير (ابدأ اللعبة الآن) أسفل بوكس اللاعبين */
-        .start-game-btn { background: #238636; color: white; font-size: 18px; padding: 12px; width: 90%; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items
+        .start-game-btn { background: #238636; color: white; font-size: 18px; padding: 12px; width: 90%; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .start-game-btn:hover { background: #2ea043; }
+        
+        /* شاشة الدور السري */
+        .role-box { font-size: 55px; color: #f1c40f; margin-top: 50px; text-shadow: 0 0 15px rgba(241,196,15,0.5); }
+    </style>
+</head>
+<body>
+
+    <div id="lobbyScreen" class="screen active-screen">
+        <div class="lobby-card">
+            <h1>لعبة الحرامي والبنك</h1>
+            <input type="text" id="playerName" placeholder="👤 اكتب اسمك..." required><br>
+            <input type="text" id="roomName" placeholder="🔑 كود الدخول السريع..."><br><br>
+            <button class="btn btn-green" onclick="joinOrCreateRoom()">دخول الغرفة</button>
+        </div>
+    </div>
+    
+    <div id="gameRoom" class="screen main-wrapper">
+        <div class="game-title">الحرامي والبنك أونلاين <span class="gold-text">💰</span></div>
+        <div class="code-tag">كود الدخول السريع: #<span id="roomTitle"></span></div>
+        
+        <div class="grid-container">
+            <div class="box-panel">
+                <div class="box-title">💬 شات بوكس الروم (مباشر)</div>
+                <div id="chatMessages" class="chat-area"></div>
+                <div class="chat-form">
+                    <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا...">
+                    <button onclick="sendChatMessage()">إرسال</button>
+                </div>
+            </div>
+            
+            <div class="box-panel">
+                <div class="box-title">👤 قائمة اللاعبين في الروم</div>
+                <div id="playerList"></div>
+                
+                <button id="startBtn" class="start-game-btn" style="display:none;" onclick="startGame()">🚀 ابدأ اللعبة الآن</button>
+            </div>
+        </div>
+        
+        <button class="btn btn-red" onclick="leaveRoom()">🚪 مغادرة الغرفة والعودة للوبي</button>
+    </div>
+
+    <div id="gamePlay" class="screen main-wrapper">
+        <h1 style="margin-top: 60px;">تم توزيع الأدوار!</h1>
+        <h2>دورك السري هو:</h2>
+        <div id="myRole" class="role-box"></div>
+        <br><br>
+        <div id="adminResetOnly" style="display:none;">
+            <button class="btn btn-red" onclick="resetGame()">🔄 جولة جديدة (إعادة تعيين للجميع)</button>
+        </div>
+    </div>
+
+    <script>
+        // --- إعدادات اتصال الفايربيز الحقيقية بتاعتك ---
+        const firebaseConfig = {
+            databaseURL: "https://zerobaba-7733e-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let currentRoom = "";
+        let myName = "";
+
+        // دالة الدخول وإنشاء الروم
+        function joinOrCreateRoom() {
+            myName = document.getElementById('playerName').value.trim();
+            currentRoom = document.getElementById('roomName').value.trim();
+
+            if (!myName || !currentRoom) {
+                alert("اكتب اسمك وكود الروم يا بطل أولاً!");
+                return;
+            }
+
+            db.ref('rooms/' + currentRoom).once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    db.ref('rooms/' + currentRoom).set({
+                        host: myName,
+                        status: "waiting"
+                    });
+                }
+                
+                db.ref('rooms/' + currentRoom + '/players/' + myName).set({
+                    name: myName,
+                    role: "لم يحدد بعد"
+                });
+
+                switchScreen('gameRoom');
+                document.getElementById('roomTitle').innerText = currentRoom;
+                listenToRoom();
+                listenToChat();
+            });
+        }
+
+        // الرادار لمراقبة اللاعبين وزرار الأدمن وحالة الجولة
+        function listenToRoom() {
+            db.ref('rooms/' + currentRoom).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                // تظهر لوحة التحكم والزرار الأخضر للمالك فقط
+                if (data.host === myName) {
+                    document.getElementById('startBtn').style.display = "flex";
+                    document.getElementById('adminResetOnly').style.display = "block";
+                } else {
+                    document.getElementById('startBtn').style.display = "none";
+                    document.getElementById('adminResetOnly').style.display = "none";
+                }
+
+                // تحديث قائمة اللاعبين المباشرة
+                const playerListDiv = document.getElementById('playerList');
+                playerListDiv.innerHTML = "";
+                if (data.players) {
+                    Object.keys(data.players).forEach((pName) => {
+                        let hostBadge = (pName === data.host) ? `<span class="host-badge">المالك 👑</span>` : `<span></span>`;
+                        playerListDiv.innerHTML += `
+                            <div class="player-row">
+                                <span>${pName} 👤</span>
+                                ${hostBadge}
+                            </div>`;
+                    });
+                }
+
+                // التحويل التلقائي لشاشة اللعب عند البدء
+                if (data.status === "playing") {
+                    switchScreen('gamePlay');
+                    if (data.players && data.players[myName]) {
+                        document.getElementById('myRole').innerText = data.players[myName].role;
+                    }
+                } else if (data.status === "waiting") {
+                    switchScreen('gameRoom');
+                }
+            });
+        }
+
+        // الدالة السحرية لبدء اللعبة وتوزيع الأدوار عشوائياً عند الضغط على الزرار الأخضر
+        function startGame() {
+            db.ref('rooms/' + currentRoom + '/players').once('value', (snapshot) => {
+                const players = snapshot.val();
+                if (!players) return;
+
+                const playerNames = Object.keys(players);
+                let roles = ["حرامي", "بنك", "عسكري"];
+                
+                // خلط الأدوار عشوائياً بالملّي
+                playerNames.sort(() => Math.random() - 0.5);
+
+                playerNames.forEach((name, index) => {
+                    let finalRole = roles[index] || "مواطن صالح";
+                    db.ref(`rooms/${currentRoom}/players/${name}`).update({
+                        role: finalRole
+                    });
+                });
+
+                // تحديث حالة السيرفر ليبدأ اللعب عند الجميع فوراً
+                db.ref('rooms/' + currentRoom).update({
+                    status: "playing"
+                });
+            });
+        }
+
+        // إرسال رسائل الشات
+        function sendChatMessage() {
+            const msgInput = document.getElementById('chatInput');
+            const msgText = msgInput.value.trim();
+            if(!msgText) return;
+
+            db.ref('rooms/' + currentRoom + '/chat').push({
+                sender: myName,
+                text: msgText
+            });
+            msgInput.value = "";
+        }
+
+        // استقبال وعرض رسائل الشات
+        function listenToChat() {
+            db.ref('rooms/' + currentRoom + '/chat').on('value', (snapshot) => {
+                const chatDiv = document.getElementById('chatMessages');
+                chatDiv.innerHTML = "";
+                const data = snapshot.val();
+                if(data) {
+                    Object.values(data).forEach(msg => {
+                        chatDiv.innerHTML += `<div><strong>${msg.sender}:</strong> ${msg.text}</div>`;
+                    });
+                    chatDiv.scrollTop = chatDiv.scrollHeight;
+                }
+            });
+        }
+
+        // جولة جديدة
+        function resetGame() {
+            db.ref('rooms/' + currentRoom).update({
+                status: "waiting"
+            }).then(() => {
+                db.ref('rooms/' + currentRoom + '/players').once('value', (snapshot) => {
+                    const players = snapshot.val();
+                    if(players) {
+                        Object.keys(players).forEach((name) => {
+                            db.ref(`rooms/${currentRoom}/players/${name}`).update({ role: "لم يحدد بعد" });
+                        });
+                    }
+                });
+            });
+        }
+
+        // مغادرة الروم
+        function leaveRoom() {
+            if(currentRoom && myName) {
+                db.ref(`rooms/${currentRoom}/players/${myName}`).remove().then(() => {
+                    location.reload();
+                });
+            }
+        }
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(screenId).classList.add('active-screen');
+        }
+    </script>
+</body>
+</html>
