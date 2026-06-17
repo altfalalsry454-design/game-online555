@@ -2,195 +2,72 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - الحرامي والبنك</title>
-    
-    <style>
-        body { margin: 0; padding: 0; background-color: #0d1117; color: #ffffff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        .login-container { background-color: #161b22; padding: 40px; border-radius: 10px; border: 1px solid #30363d; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative; }
-        
-        /* زر علامة الاستفهام */
-        .help-icon { position: absolute; top: 15px; left: 15px; width: 28px; height: 28px; background-color: #30363d; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #58a6ff; font-weight: bold; cursor: pointer; font-size: 16px; border: 1px solid #444c56; transition: 0.2s; }
-        .help-icon:hover { background-color: #21262d; color: #79c0ff; transform: scale(1.1); }
+    <title>مزاد الملوك - ZeroBaba</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-        .input-group { text-align: right; margin-bottom: 20px; }
-        .input-group label { display: block; margin-bottom: 8px; color: #8b949e; font-size: 15px; }
-        .input-group input { width: 100%; padding: 12px; box-sizing: border-box; background-color: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: white; font-size: 16px; outline: none; }
-        .input-group input:focus { border-color: #58a6ff; }
-        .btn-submit { width: 100%; padding: 12px; background-color: #238636; color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-submit:hover { background-color: #2ea043; }
-        .toggle-auth { margin-top: 25px; font-size: 14px; color: #8b949e; }
-        .toggle-auth a { color: #58a6ff; text-decoration: none; margin-right: 5px; cursor: pointer; font-weight: bold; }
-        
-        #alertBox { margin-top: 20px; padding: 12px; border-radius: 6px; display: none; font-weight: bold; text-align: center; font-size: 14px; line-height: 1.5; }
-        .err { background-color: rgba(248, 81, 73, 0.15); color: #f85149; border: 1px solid rgba(248, 81, 73, 0.4); }
-        .succ { background-color: rgba(46, 160, 67, 0.15); color: #3fb950; border: 1px solid rgba(46, 160, 67, 0.4); }
-
-        /* تصميم النافذة المنبثقة للشرح (Modal) */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .modal-box { background-color: #161b22; border: 1px solid #30363d; padding: 30px; border-radius: 10px; width: 90%; max-width: 450px; text-align: right; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
-        .modal-box h2 { color: #58a6ff; margin-top: 0; border-bottom: 1px solid #30363d; padding-bottom: 10px; text-align: center; }
-        .modal-box p { color: #c9d1d9; line-height: 1.6; font-size: 15px; }
-        .modal-box ul { padding-right: 20px; color: #c9d1d9; line-height: 1.8; }
-        .modal-box ul li strong { color: #ff7b72; }
-        .btn-close { width: 100%; padding: 10px; background-color: #21262d; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 20px; font-weight: bold; }
-        .btn-close:hover { background-color: #30363d; color: white; }
-    </style>
-</head>
-<body>
-
-    <div class="login-container">
-        <div class="help-icon" onclick="openHelp()" title="اضغط هنا لفهم نظام اللعبة">؟</div>
-
-        <h1 id="mainTitle">الحرامي والبنك</h1>
-        
-        <form id="authForm" novalidate>
-            <div class="input-group">
-                <label>اسم المستخدم</label>
-                <input type="text" id="username" placeholder="مثال: Ahmad">
-            </div>
-            <div class="input-group">
-                <label>كلمة المرور</label>
-                <input type="password" id="password" placeholder="أدخل كلمة المرور">
-            </div>
-            <button type="submit" class="btn-submit" id="btnSubmit">تسجيل الدخول</button>
-        </form>
-
-        <div id="alertBox"></div>
-
-        <div class="toggle-auth">
-            <span id="toggleText">ليس لديك حساب؟</span>
-            <a id="toggleLink" onclick="toggleAuthMode()">إنشاء حساب جديد</a>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="helpModal" onclick="closeHelpOutside(event)">
-        <div class="modal-box">
-            <h2>💰 شرح نظام لعبة الحرامي والبنك</h2>
-            <p>مرحباً بك في اللعبة! فكرة اللعبة تعتمد على التحدي والذكاء بين اللاعبين، وإليك النظام باختصار:</p>
-            <ul>
-                <li><strong>دور الحرامي:</strong> هدفك الرئيسي هو التسلل وسرقة أكبر قدر من الأموال والذهب من البنك دون أن يتم كشفك، وتجميع النقاط لترتيبك.</li>
-                <li><strong>دور البنك (نظام الحماية):</strong> يحتوي على أنظمة حماية، وعليك تجنب فخاخ الأمن والذكاء في اختيار خطواتك لتنجح في الهروب.</li>
-                <li><strong>حفظ النقاط:</strong> حسابك مربوط تلقائياً بقاعدة البيانات؛ كل نقطة تجمعها أثناء اللعب يتم حفظها فوراً باسمك لتنافس باقي اللاعبين في قائمة الصدارة!</li>
-            </ul>
-            <p style="font-size: 13px; color: #8b949e; text-align: center; margin-top: 15px;">💡 نصيحة: تأكد من إنشاء حساب بكلمة مرور لا تقل عن 6 خانات لحفظ تقدمك دائماً.</p>
-            <button class="btn-close" onclick="closeHelp()">إغلاق ومتابعة</button>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
+    <script>
+        // إعدادات مشروعك المدمجة
         const firebaseConfig = {
             apiKey: "AIzaSyDCYnbAcV0HtrSyRUorBQmXQuBJO7m1C4A",
             authDomain: "zerobaba-7733e.firebaseapp.com",
+            databaseURL: "https://zerobaba-7733e-default-rtdb.firebaseio.com",
             projectId: "zerobaba-7733e",
             storageBucket: "zerobaba-7733e.firebasestorage.app",
             messagingSenderId: "20311065718",
             appId: "1:20311065718:web:5e50f0ad492d57f2518b57"
         };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+    </script>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
+    <style>
+        /* (احتفظ بنفس الـ CSS الموجود في ردنا السابق هنا لضمان جمالية التصميم) */
+        :root { --bg-main: #0b0f19; --bg-card: #151d30; --gold: #d4af37; --green: #2ecc71; --red: #e74c3c; }
+        body { background-color: var(--bg-main); color: #fff; font-family: sans-serif; text-align: center; }
+        .hidden { display: none !important; }
+        .auth-container { max-width: 400px; margin: 100px auto; padding: 30px; background: var(--bg-card); border: 2px solid var(--gold); border-radius: 15px; }
+        input { width: 90%; padding: 10px; margin: 10px; background: #111; color: #fff; border: 1px solid #444; }
+        button { padding: 10px 20px; background: var(--gold); border: none; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
 
-        let isSignUpMode = false;
+    <div id="auth-page" class="auth-container">
+        <h2>نظام ZeroBaba للمزادات</h2>
+        <input type="text" id="auth-user" placeholder="اسم المستخدم">
+        <input type="password" id="auth-pass" placeholder="كلمة المرور">
+        <button onclick="login()">دخول</button>
+    </div>
 
-        // دالات التحكم في نافذة الشرح
-        window.openHelp = function() {
-            const modal = document.getElementById('helpModal');
-            modal.style.display = 'flex';
-            setTimeout(() => { modal.style.opacity = '1'; }, 10);
-        }
+    <div id="main-game" class="hidden">
+        <h1>مرحباً بك في المزاد: <span id="lbl-username"></span></h1>
+        <div id="game-content">
+            <p>تم الاتصال بقاعدة بيانات: <b>zerobaba-7733e</b></p>
+            <button onclick="logout()">خروج</button>
+        </div>
+    </div>
 
-        window.closeHelp = function() {
-            const modal = document.getElementById('helpModal');
-            modal.style.opacity = '0';
-            setTimeout(() => { modal.style.display = 'none'; }, 300);
-        }
-
-        window.closeHelpOutside = function(e) {
-            if (e.target.id === 'helpModal') {
-                closeHelp();
-            }
-        }
-
-        function showAlert(txt, type) {
-            const box = document.getElementById('alertBox');
-            box.innerText = txt;
-            box.className = type;
-            box.style.display = 'block';
-        }
-
-        window.toggleAuthMode = function() {
-            isSignUpMode = !isSignUpMode;
-            document.getElementById('mainTitle').innerText = isSignUpMode ? "إنشاء حساب جديد" : "الحرامي والبنك";
-            document.getElementById('btnSubmit').innerText = isSignUpMode ? "سجل الآن" : "تسجيل الدخول";
-            document.getElementById('toggleText').innerText = isSignUpMode ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟";
-            document.getElementById('toggleLink').innerText = isSignUpMode ? "تسجيل الدخول" : "إنشاء حساب جديد";
-            document.getElementById('alertBox').style.display = 'none';
-        }
-
-        document.getElementById('authForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
+    <script>
+        // دالة الدخول البسيطة للتأكد من الربط
+        function login() {
+            const u = document.getElementById('auth-user').value;
+            const p = document.getElementById('auth-pass').value;
             
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value;
-
-            if (!user) {
-                showAlert("يرجى إدخال اسم المستخدم أولاً.", "err");
-                return;
-            }
-            if (!pass) {
-                showAlert("يرجى إدخال كلمة المرور.", "err");
-                return;
-            }
-
-            if (user === "Zero" && pass === "159357") {
-                showAlert("أهلاً بك يا أدمن Zero! جاري فتح لوحة التحكم...", "succ");
-                setTimeout(() => { window.location.href = "admin.html"; }, 1000);
-                return;
-            }
-
-            try {
-                const email = user.toLowerCase().replace(/\s+/g, '') + "@game.com";
-                
-                if (isSignUpMode) {
-                    let res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await set(ref(db, 'users/' + res.user.uid), { username: user, points: 0 });
-                    showAlert("تم إنشاء الحساب بنجاح! جاري الدخول...", "succ");
+            // تحقق من قاعدة البيانات
+            db.ref('users/' + u).once('value').then(snap => {
+                if(snap.exists() && snap.val().password === p) {
+                    document.getElementById('auth-page').classList.add('hidden');
+                    document.getElementById('main-game').classList.remove('hidden');
+                    document.getElementById('lbl-username').innerText = u;
                 } else {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                    showAlert("تم تسجيل الدخول بنجاح! جاري تحويلك...", "succ");
+                    alert("بيانات غير صحيحة أو حساب غير موجود!");
                 }
-                setTimeout(() => { window.location.href = "game.html?user=" + encodeURIComponent(user); }, 1500);
-            } catch (err) {
-                let errorMessage = "حدث خطأ غير متوقع، حاول مرة أخرى.";
+            });
+        }
 
-                switch (err.code) {
-                    case "auth/weak-password":
-                        errorMessage = "عفواً! يجب أن تكون كلمة المرور مكونة من 6 أرقام أو أحرف على الأقل.";
-                        break;
-                    case "auth/invalid-email":
-                        errorMessage = "اسم المستخدم غير صالح أو يحتوي على رموز ممنوعة.";
-                        break;
-                    case "auth/email-already-in-use":
-                        errorMessage = "اسم المستخدم هذا مسجل بالفعل! جرب اسماً آخر.";
-                        break;
-                    case "auth/wrong-password":
-                    case "auth/invalid-credential":
-                        errorMessage = "خطأ في اسم المستخدم أو كلمة المرور، تأكد من بياناتك.";
-                        break;
-                    case "auth/user-not-found":
-                        errorMessage = "هذا الحساب غير موجود، يرجى إنشاء حساب جديد.";
-                        break;
-                }
-
-                showAlert(errorMessage, "err");
-            }
-        });
+        function logout() { location.reload(); }
     </script>
 </body>
 </html>
