@@ -3,25 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مزاد الملوك - نظام صعود وهبوط الأسعار اللحظي</title>
+    <title>مزاد الملوك السحابي - نظام الأسعار اللحظي</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDCYnbAcV0HtrSyRUorBQmXQuBJO7m1C4A",
-            authDomain: "zerobaba-7733e.firebaseapp.com",
-            databaseURL: "https://zerobaba-7733e-default-rtdb.firebaseio.com",
-            projectId: "zerobaba-7733e",
-            storageBucket: "zerobaba-7733e.firebasestorage.app",
-            messagingSenderId: "20311065718",
-            appId: "1:20311065718:web:5e50f0ad492d57f2518b57"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-    </script>
-
     <style>
         :root {
             --bg-main: #0b0f19;
@@ -92,7 +75,7 @@
         }
         .auth-container p { margin-top: 15px; font-size: 14px; cursor: pointer; color: #a0aec0; }
 
-        /* الهيدر الرئيسي */
+        /* الهيدر الرئيسي للموقع */
         header {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -116,6 +99,7 @@
         .balance-box { background: #1f2b44; color: var(--green); font-size: 20px; font-weight: bold; padding: 8px 20px; border-radius: 20px; border: 1px solid var(--green); }
         .gift-btn { background: var(--gold); color: #000; font-size: 20px; border: none; padding: 8px 12px; border-radius: 50px; cursor: pointer; }
 
+        /* الواجهة الرئيسية والتقسيم */
         .main-layout { max-width: 1200px; margin: 30px auto; padding: 0 20px; text-align: center; }
         .center-btn { background: var(--gold); color: #000; font-size: 24px; font-weight: bold; padding: 15px 40px; border: none; border-radius: 12px; cursor: pointer; margin: 20px 0; transition: 0.2s; }
         .center-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--gold); }
@@ -123,10 +107,22 @@
         .section-box { background: var(--bg-card); border-radius: 12px; padding: 20px; margin-bottom: 25px; border: 1px solid #2d3748; text-align: right; }
         .section-box h3 { color: var(--gold); margin-top: 0; border-bottom: 1px solid #2d3748; padding-bottom: 10px; }
 
+        /* المربعات للشنطة */
         .grid-bag { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; }
         .bag-item { background: #1f2b44; border: 1px solid var(--gold); border-radius: 8px; padding: 15px; text-align: center; }
-        .bag-item i, .bag-item span { font-size: 40px; color: var(--gold); }
+        .bag-item img { width: 50px; height: 50px; object-fit: contain; display: block; margin: 0 auto 10px auto; }
+        .bag-item span { font-size: 40px; color: var(--gold); display: block; margin-bottom: 10px; }
+        .bag-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #fff; }
+        .bag-price { color: var(--green); font-size: 13px; font-weight: bold; }
 
+        /* قائمة أسعار منتجاتي */
+        .prod-list-table { width: 100%; border-collapse: collapse; text-align: center; margin-top: 10px; }
+        .prod-list-table th, .prod-list-table td { padding: 12px; border-bottom: 1px solid #2d3748; }
+        .prod-list-table th { color: var(--gold); background: #111622; }
+        .price-up { color: var(--green); font-weight: bold; }
+        .price-down { color: var(--red); font-weight: bold; }
+
+        /* غرفة المزاد */
         .auction-room-grid { display: grid; grid-template-columns: 300px 1fr 250px; gap: 20px; max-width: 1400px; margin: 20px auto; padding: 20px; }
         .auction-center-panel { background: var(--bg-card); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
         .product-img-placeholder { width: 200px; height: 200px; margin: 15px auto; background: #1f2b44; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--gold); }
@@ -143,6 +139,7 @@
         .players-list { background: #111622; height: 360px; overflow-y: auto; padding: 10px; border-radius: 8px; list-style: none; padding: 10px; margin: 0; text-align: right; }
         .players-list li { padding: 8px; border-bottom: 1px solid #2d3748; display: flex; justify-content: space-between; }
 
+        /* لوحة التحكم للأدمن */
         .admin-container { max-width: 1100px; margin: 30px auto; padding: 20px; background: var(--bg-card); border: 2px solid var(--red); border-radius: 15px; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
         .admin-table th, .admin-table td { padding: 10px; border: 1px solid #2d3748; text-align: center; }
@@ -151,6 +148,7 @@
 
         .hidden { display: none !important; }
         
+        /* النافذة المنبثقة للترتيب */
         .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-card); border: 2px solid var(--gold); padding: 25px; border-radius: 12px; z-index: 1000; width: 450px; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; }
         
@@ -170,31 +168,31 @@
         <h2 id="auth-title">تسجيل الدخول</h2>
         <input type="text" id="auth-user" placeholder="اسم المستخدم">
         <input type="password" id="auth-pass" placeholder="كلمة المرور">
-        <button onclick="handleAuth()" id="auth-btn">دخول</button>
-        <p id="auth-switch" onclick="switchAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</p>
+        <button id="btn-auth-submit">دخول</button>
+        <p id="auth-switch">ليس لديك حساب؟ إنشاء حساب جديد</p>
     </div>
 
     <div id="main-game" class="hidden">
         <header>
             <div class="header-left">
                 <span><i class="fas fa-user-circle"></i> <strong id="lbl-username"></strong></span>
-                <button class="btn-gold-outline" id="btn-top-heroes" onclick="toggleHeroes()"><i class="fas fa-trophy"></i> أبطال المزاد</button>
+                <button class="btn-gold-outline" id="btn-top-heroes"><i class="fas fa-trophy"></i> أبطال المزاد</button>
             </div>
             <div class="header-center">
-                <h1>مزاد ملوك</h1>
+                <h1>مزاد الملوك</h1>
             </div>
             <div class="header-right">
-                <button class="gift-btn" onclick="claimGift()"><i class="fas fa-gift"></i></button>
+                <button class="gift-btn" id="btn-claim-gift"><i class="fas fa-gift"></i></button>
                 <div class="balance-box">الرصيد: $<span id="lbl-balance">250,000</span></div>
-                <button class="btn-gold-outline" style="border-color:var(--red); color:var(--red);" onclick="logout()">خروج</button>
+                <button class="btn-gold-outline" style="border-color:var(--red); color:var(--red);" id="btn-logout">خروج</button>
             </div>
         </header>
 
         <div id="page-home" class="main-layout">
-            <button class="center-btn" onclick="goToRoom()"><i class="fas fa-gavel"></i> دخول غرفة المزاد</button>
+            <button class="center-btn" id="btn-go-to-room"><i class="fas fa-gavel"></i> دخول غرفة المزاد</button>
 
             <div class="section-box">
-                <h3><i class="fas fa-store"></i> أسعار منتجاتي</h3>
+                <h3><i class="fas fa-store"></i> أسعار منتجاتي (تحديث تلقائي وفوري للأسعار وصعودها أو هبوطها)</h3>
                 <div id="my-products-list"></div>
             </div>
 
@@ -210,9 +208,9 @@
                 <div class="chat-box" id="chat-box"></div>
                 <div class="chat-input-group">
                     <input type="text" id="chat-msg" placeholder="اكتب رسالة للمزاد...">
-                    <button class="btn-gold-outline" onclick="sendChat()">إرسال</button>
+                    <button class="btn-gold-outline" id="btn-send-chat">إرسال</button>
                 </div>
-                <button class="btn-gold-outline" style="margin-top:20px; width:100%; border-color:var(--red); color:var(--red);" onclick="goHome()">العودة للرئيسية</button>
+                <button class="btn-gold-outline" style="margin-top:20px; width:100%; border-color:var(--red); color:var(--red);" id="btn-go-home">العودة للرئيسية</button>
             </div>
 
             <div class="auction-center-panel">
@@ -221,15 +219,11 @@
                 <h3 id="auc-item-name" style="font-size: 24px; margin: 15px 0;">تحميل...</h3>
                 <div class="product-img-placeholder" id="auc-item-img">🖼️</div>
                 <div style="font-size: 22px; margin: 5px 0;">السعر الحالي: <strong id="auc-current-price" style="color: var(--green);">$0</strong></div>
+                <div style="font-size: 14px; color: #a0aec0; margin-bottom: 10px;">التغير المستقبلي للسلعة: <span id="auc-item-rate" style="color:var(--gold)">0%</span> كل <span id="auc-item-minutes" style="color:var(--gold)">0</span> دقيقة</div>
                 <div>أعلى مزايد الآن: <strong id="auc-highest-bidder" style="color: var(--gold);">لا أحد</strong></div>
 
-                <div class="bid-buttons">
-                    <button onclick="raiseBid(5000)">+ 5,000$</button>
-                    <button onclick="raiseBid(10000)">+ 10,000$</button>
-                    <button onclick="raiseBid(50000)">+ 50,000$</button>
-                    <button onclick="raiseBid(100000)">+ 100,000$</button>
-                    <button onclick="raiseBid(1000000)" style="grid-column: span 2; border-color: var(--green); color: var(--green);">🔥 زيادة مليون دولار 1M$</button>
-                </div>
+                <div class="bid-buttons" id="bid-buttons-container">
+                    </div>
             </div>
 
             <div class="auction-center-panel" style="border-color: #2d3748;">
@@ -239,40 +233,661 @@
         </div>
 
         <div id="page-admin" class="admin-container hidden">
-            <button class="btn-gold-outline" style="border-color:var(--red); color:var(--red); width:100%;" onclick="logout()">خروج من لوحة الأدمن</button>
+            <h2 style="color: var(--red); text-align: center;"><i class="fas fa-user-shield"></i> لوحة تحكم الإدارة العليا (الأدمن)</h2>
+            
+            <div class="section-box" style="background:#111622;">
+                <h4>أضف منتج جديد ليتم حفظه وتكراره بالترتيب في المزاد</h4>
+                <p style="color: #a0aec0; font-size: 13px; margin: 0 0 10px 0;">💡 نصيحة: لحجم نمو السعر ضع رقم عادي (مثال: 1.5). لجعل السعر يقل وينخفض ضع إشارة سالب قبل الرقم (مثال: -2).</p>
+                <input type="text" id="adm-p-name" placeholder="اسم المنتج" style="width:23%; padding:8px; margin:5px; background: #0b0f19; color: #fff; border: 1px solid #444; border-radius: 5px;">
+                <input type="text" id="adm-p-img" placeholder="رابط صورة المنتج (أو ايموجي)" style="width:23%; padding:8px; margin:5px; background: #0b0f19; color: #fff; border: 1px solid #444; border-radius: 5px;">
+                <input type="number" id="adm-p-price" placeholder="بداية المزاد من كام؟" style="width:23%; padding:8px; margin:5px; background: #0b0f19; color: #fff; border: 1px solid #444; border-radius: 5px;">
+                <br>
+                <input type="number" step="0.01" id="adm-p-rate" placeholder="نسبة التغير المئوية % (موجب للزيادة / سالب للنقصان)" style="width:48%; padding:8px; margin:5px; background: #0b0f19; color: #fff; border: 1px solid #444; border-radius: 5px;">
+                <input type="number" id="adm-p-minutes" placeholder="تتغير النسبة دي كل كام دقيقة؟" style="width:48%; padding:8px; margin:5px; background: #0b0f19; color: #fff; border: 1px solid #444; border-radius: 5px;">
+                <button class="btn-gold-outline" id="btn-admin-add-product" style="width:98%; margin:10px auto; display:block;">حفظ وجدولة السلعة في طابور المزاد</button>
+            </div>
+
+            <div class="section-box" style="background:#111622;">
+                <h4>⚙️ إدارة طابور منتجات المزاد الحالية وتحديث قيمها (ضع سالب (-) للنقصان)</h4>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الأيقونة/الصورة</th>
+                            <th>السعر الابتدائي</th>
+                            <th>النسبة المئوية %</th>
+                            <th>كل كم دقيقة</th>
+                            <th>الإجراءات والتحكم</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-queue-table"></tbody>
+                </table>
+            </div>
+
+            <div class="section-box" style="background:#111622;">
+                <h4>قائمة حسابات اللاعبين (تعديل كاشات، كلمات سر، وحذف الحسابات تماماً)</h4>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>اسم الحساب</th>
+                            <th>كلمة السر</th>
+                            <th>رصيد الكاش</th>
+                            <th>تعديل الرصيد</th>
+                            <th>إجراء الإدارة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-table"></tbody>
+                </table>
+            </div>
+            <button class="btn-gold-outline" style="border-color:var(--red); color:var(--red); width:100%;" id="btn-admin-logout">خروج من لوحة الأدمن</button>
         </div>
     </div>
 
-    <script>
-        // دالة الحفظ المدمجة للربط (Firebase + LocalStorage)
-        function saveUserData() {
-            if(currentUser) {
-                localStorage.setItem('users', JSON.stringify(JSON.parse(localStorage.getItem('users'))));
-                db.ref('users/' + currentUser.username.replace(/[.#$\[\]]/g, "_")).set(currentUser);
-            }
+    <div class="modal-overlay hidden" id="heroes-overlay"></div>
+    <div class="modal hidden" id="heroes-modal">
+        <h3 style="color: var(--gold); text-align: center; margin-top: 0; border-bottom: 1px solid #2d3748; padding-bottom: 10px;"><i class="fas fa-trophy"></i> أبطال المدينة (ترتيب الثروة)</h3>
+        <div id="heroes-ranking-list"></div>
+        <button class="btn-gold-outline" style="width: 100%; margin-top: 15px;" id="btn-close-heroes">إغلاق اللوحة</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, child, update, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // إعدادات الكونفيج الخاصة بك أونلاين
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCYnbAcV0HtrSyRUorBQmXQuBJO7m1C4A",
+            authDomain: "zerobaba-7733e.firebaseapp.com",
+            databaseURL: "https://zerobaba-7733e-default-rtdb.firebaseio.com",
+            projectId: "zerobaba-7733e",
+            storageBucket: "zerobaba-7733e.firebasestorage.app",
+            messagingSenderId: "20311065718",
+            appId: "1:20311065718:web:5e50f0ad492d57f2518b57",
+            measurementId: "G-QNV01SE9WV"
+        };
+
+        // تهيئة فايربيس وقاعدة البيانات اللحظية
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // متغيرات اللعبة الحركية
+        let currentUser = null;
+        let isSignUp = false;
+        let globalUsersList = {};
+        let systemSettings = { currentQueueIndex: 0, auctionDuration: 120 };
+        let activeProduct = {};
+
+        // دالة لعرض التنبيهات
+        function showNotification(text) {
+            let toast = document.getElementById('notification-toast');
+            let toastText = document.getElementById('toast-text');
+            toastText.innerText = text;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        // دالة رفع المزاد للربط
-        function raiseBid(amt) {
-            if(currentUser.balance < (activeProduct.currentBid + amt)) return showNotification("رصيدك لا يكفي!");
-            db.ref('auction/currentBid').transaction((c) => (c || activeProduct.startPrice) + amt);
-            db.ref('auction/highestBidder').set(currentUser.username);
+        // نغمة الأزرار الإلكترونية عند الضغط
+        function playButtonSound() {
+            try {
+                let context = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = context.createOscillator();
+                let gain = context.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(600, context.currentTime);
+                gain.gain.setValueAtTime(0.1, context.currentTime);
+                osc.connect(gain);
+                gain.connect(context.destination);
+                osc.start();
+                osc.stop(context.currentTime + 0.08);
+            } catch(e) {}
         }
 
-        // [ضع هنا باقي الـ JavaScript الخاص بملفك كاملاً]
-        // [تأكد أن كافة دوالك موجودة هنا]
-        
-        // استماع للبيانات من Firebase
-        db.ref('auction').on('value', (s) => {
-            let data = s.val();
-            if(data) {
-                activeProduct.currentBid = data.currentBid;
-                activeProduct.highestBidder = data.highestBidder;
-                setupAuctionRoom();
+        document.addEventListener('click', function(e) {
+            if(e.target.tagName === 'BUTTON' || e.target.classList.contains('gift-btn')) {
+                playButtonSound();
             }
         });
+
+        // تشغيل مراقبي المزامنة السحابية الحية (Realtime Observers)
+        function initSincObservers() {
+            // 1. مراقبة الحسابات والتغيير في ثروات اللاعبين وشنطهم
+            onValue(ref(db, 'users'), (snapshot) => {
+                if(snapshot.exists()) {
+                    globalUsersList = snapshot.val();
+                    if(currentUser && globalUsersList[currentUser.username]) {
+                        currentUser = globalUsersList[currentUser.username];
+                        updateUI();
+                    }
+                    if(currentUser && currentUser.username === "Zero") {
+                        loadAdminPanel();
+                    }
+                }
+            });
+
+            // 2. مراقبة حالة السلعة المعروضة بالمزاد المباشر حالياً
+            onValue(ref(db, 'activeProduct'), (snapshot) => {
+                if(snapshot.exists()) {
+                    activeProduct = snapshot.val();
+                    setupAuctionRoom();
+                }
+            });
+
+            // 3. مراقبة العداد الزمني للمزاد بشكل حي متزامن
+            onValue(ref(db, 'systemSettings'), (snapshot) => {
+                if(snapshot.exists()) {
+                    systemSettings = snapshot.val();
+                    let mins = Math.floor(systemSettings.auctionDuration / 60).toString().padStart(2, '0');
+                    let secs = (systemSettings.auctionDuration % 60).toString().padStart(2, '0');
+                    let lbl = document.getElementById('auc-timer');
+                    if(lbl) lbl.innerText = `${mins}:${secs}`;
+                }
+            });
+
+            // 4. مراقبة وقراءة شات اللاعبين فورياً
+            onValue(ref(db, 'chat'), (snapshot) => {
+                let chatBox = document.getElementById('chat-box');
+                if(snapshot.exists() && chatBox) {
+                    let chatData = snapshot.val();
+                    let html = "";
+                    Object.values(chatData).forEach(msg => {
+                        let color = msg.user === "🔨 المزاد" ? "var(--gold)" : "lightblue";
+                        html += `<p><strong style="color:${color}">${msg.user}:</strong> ${msg.text}</p>`;
+                    });
+                    chatBox.innerHTML = html;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            });
+        }
+
+        // معالجة تبديل واجهة الدخول / التسجيل
+        document.getElementById('auth-switch').onclick = function() {
+            isSignUp = !isSignUp;
+            document.getElementById('auth-title').innerText = isSignUp ? "إنشاء حساب جديد" : "تسجيل الدخول";
+            document.getElementById('auth-btn').innerText = isSignUp ? "تسجيل الحساب" : "دخول";
+            document.getElementById('auth-switch').innerText = isSignUp ? "لديك حساب بالفعل؟ سجل دخولك" : "ليس لديك حساب؟ إنشاء حساب جديد";
+        };
+
+        // معالجة الدخول والتسجيل عبر السحابة
+        document.getElementById('btn-auth-submit').onclick = async function() {
+            let uInput = document.getElementById('auth-user').value.trim();
+            let pInput = document.getElementById('auth-pass').value.trim();
+
+            if(!uInput || !pInput) return showNotification("يرجى ملء جميع الخانات!");
+            if(uInput.includes('.') || uInput.includes('#') || uInput.includes('$') || uInput.includes('[') || uInput.includes(']')) {
+                return showNotification("اسم الحساب يجب ألا يحتوي على رموز خاصة!");
+            }
+
+            const userRef = ref(db, `users/${uInput}`);
+            const snapshot = await get(userRef);
+
+            if(isSignUp) {
+                if(snapshot.exists()) return showNotification("اسم المستخدم مأخوذ بالفعل!");
+                let newUser = { username: uInput, password: pInput, balance: 250000, inventory: "", lastGift: 0 };
+                await set(userRef, newUser);
+                showNotification("تم إنشاء حسابك بنجاح السحابي بـ 250,000$!");
+                isSignUp = false;
+                document.getElementById('auth-switch').click();
+            } else {
+                if(!snapshot.exists()) return showNotification("اسم الحساب غير مسجل في السحابة!");
+                let user = snapshot.val();
+                if(user.password !== pInput) return showNotification("كلمة السر غير صحيحة!");
+                
+                currentUser = user;
+                initGame();
+            }
+        };
+
+        function initGame() {
+            document.getElementById('auth-page').classList.add('hidden');
+            document.getElementById('main-game').classList.remove('hidden');
+            document.getElementById('lbl-username').innerText = currentUser.username;
+            
+            initSincObservers();
+
+            if(currentUser.username === "Zero" && currentUser.password === "159357") {
+                document.getElementById('page-home').classList.add('hidden');
+                document.getElementById('page-admin').classList.remove('hidden');
+                loadAdminPanel();
+                startAdminEngine(); // تشغيل محرك الأسعار والمؤقت فقط إذا كان الأدمن متصل
+            } else {
+                goHome();
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('lbl-balance').innerText = currentUser.balance.toLocaleString();
+            renderBagAndProducts();
+        }
+
+        function goHome() {
+            document.getElementById('page-room').classList.add('hidden');
+            document.getElementById('page-admin').classList.add('hidden');
+            document.getElementById('page-home').classList.remove('hidden');
+            updateUI();
+        }
+
+        function goToRoom() {
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-room').classList.remove('hidden');
+            setupAuctionRoom();
+        }
+
+        document.getElementById('btn-go-home').onclick = goHome;
+        document.getElementById('btn-go-to-room').onclick = goToRoom;
+
+        document.getElementById('btn-logout').onclick = function() {
+            currentUser = null;
+            window.location.reload();
+        };
+        document.getElementById('btn-admin-logout').onclick = function() {
+            window.location.reload();
+        };
+
+        // نظام الهدايا السحابي اليومي
+        document.getElementById('btn-claim-gift').onclick = async function() {
+            let now = new Date().getTime();
+            let delay = 24 * 60 * 60 * 1000;
+            
+            if(now - currentUser.lastGift < delay) {
+                let remaining = delay - (now - currentUser.lastGift);
+                let hours = Math.floor(remaining / (1000 * 60 * 60));
+                return showNotification(`يمكنك أخذ الهدية مجدداً بعد ${hours} ساعة.`);
+            }
+
+            currentUser.balance += 250000;
+            currentUser.lastGift = now;
+            await set(ref(db, `users/${currentUser.username}`), currentUser);
+            showNotification("🎉 مبروك! استلمت هدية الملك وقدرها 250,000 دولار كاش!");
+        };
+
+        // نافذة أبطال المدينة
+        document.getElementById('btn-top-heroes').onclick = toggleHeroes;
+        document.getElementById('btn-close-heroes').onclick = toggleHeroes;
+        function toggleHeroes() {
+            let overlay = document.getElementById('heroes-overlay');
+            let modal = document.getElementById('heroes-modal');
+            overlay.classList.toggle('hidden');
+            modal.classList.toggle('hidden');
+
+            if(!modal.classList.contains('hidden')) {
+                let userList = Object.values(globalUsersList).filter(x => x.username !== 'Zero');
+                userList.sort((a,b) => b.balance - a.balance);
+                
+                let html = userList.map((u, i) => `
+                    <div class="rank-item">
+                        <span class="rank-name">${i+1}. 👤 ${u.username}</span>
+                        <span class="rank-money">$${u.balance.toLocaleString()}</span>
+                    </div>
+                `).join('');
+                document.getElementById('heroes-ranking-list').innerHTML = html;
+            }
+        }
+
+        // إعداد غرفة المزاد السحابية
+        function setupAuctionRoom() {
+            if(!activeProduct || !activeProduct.name) {
+                document.getElementById('auc-item-name').innerText = "في انتظار بدء المزاد التالي...";
+                return;
+            }
+            document.getElementById('auc-item-name').innerText = activeProduct.name;
+            document.getElementById('auc-current-price').innerText = "$" + activeProduct.currentBid.toLocaleString();
+            document.getElementById('auc-highest-bidder').innerText = activeProduct.highestBidder;
+            
+            let rateText = activeProduct.hourlyRate >= 0 ? `زيادة +${activeProduct.hourlyRate}%` : `نقصان ${activeProduct.hourlyRate}%`;
+            document.getElementById('auc-item-rate').innerText = rateText;
+            document.getElementById('auc-item-minutes').innerText = activeProduct.increaseEveryMinutes;
+            
+            if(activeProduct.img && activeProduct.img.includes('http')) {
+                document.getElementById('auc-item-img').innerHTML = `<img src="${activeProduct.img}">`;
+            } else {
+                document.getElementById('auc-item-img').innerHTML = `<span style="font-size:70px">${activeProduct.img || '📦'}</span>`;
+            }
+
+            let listHTML = Object.values(globalUsersList).map(u => `<li><span>👤 ${u.username}</span> <span style="color:var(--green)">متصل سحابياً</span></li>`).join('');
+            document.getElementById('room-users-list').innerHTML = listHTML;
+        }
+
+        // توليد أزرار المزايدة وربطها برمجياً
+        const amouts = [5000, 10000, 50000, 100000];
+        let buttonsContainer = document.getElementById('bid-buttons-container');
+        buttonsContainer.innerHTML = '';
+        amouts.forEach(amt => {
+            let btn = document.createElement('button');
+            btn.innerText = `+ ${amt.toLocaleString()}$`;
+            btn.onclick = () => raiseBid(amt);
+            buttonsContainer.appendChild(btn);
+        });
+        let megaBtn = document.createElement('button');
+        megaBtn.style = "grid-column: span 2; border-color: var(--green); color: var(--green);";
+        megaBtn.innerText = "🔥 زيادة مليون دولار 1M$";
+        megaBtn.onclick = () => raiseBid(1000000);
+        buttonsContainer.appendChild(megaBtn);
+
+        async function raiseBid(amt) {
+            if(!activeProduct || !activeProduct.name) return showNotification("لا يوجد مزاد قائم حالياً!");
+            if(currentUser.balance < (activeProduct.currentBid + amt)) return showNotification("رصيدك في البنك لا يغطي هذه المزايدة!");
+            
+            let newBid = activeProduct.currentBid + amt;
+            activeProduct.currentBid = newBid;
+            activeProduct.highestBidder = currentUser.username;
+            
+            await set(ref(db, 'activeProduct'), activeProduct);
+            
+            let chatRef = ref(db, 'chat');
+            await push(chatRef, {
+                user: "🔨 المزاد",
+                text: `رفع [${currentUser.username}] السعر بمقدار $${amt.toLocaleString()} لتصبح القيمة الحالية $${newBid.toLocaleString()}`
+            });
+        }
+
+        // إرسال رسائل الشات
+        document.getElementById('btn-send-chat').onclick = async function() {
+            let txt = document.getElementById('chat-msg').value.trim();
+            if(!txt) return;
+            await push(ref(db, 'chat'), {
+                user: currentUser.username,
+                text: txt
+            });
+            document.getElementById('chat-msg').value = "";
+        };
+
+        // رندرة الشنطة والمنتجات
+        function renderBagAndProducts() {
+            let bagGrid = document.getElementById('bag-grid');
+            let prodList = document.getElementById('my-products-list');
+            
+            if(!bagGrid || !prodList) return;
+
+            let inventoryArray = currentUser.inventory ? Object.values(currentUser.inventory) : [];
+            let inventoryKeys = currentUser.inventory ? Object.keys(currentUser.inventory) : [];
+
+            if(inventoryArray.length === 0) {
+                bagGrid.innerHTML = "<p style='color:gray; width:100%; text-align:center;'>شنطتك خالية حالياً.</p>";
+                prodList.innerHTML = "<p style='color:gray'>لا توجد منتجات لديك لعرضها في المتجر للبيع حالياً.</p>";
+                return;
+            }
+
+            let bagHTML = "";
+            let prodHTML = `
+                <table class="prod-list-table">
+                    <thead>
+                        <tr>
+                            <th>المنتج</th>
+                            <th>سعر الشراء الاصلي</th>
+                            <th>السعر الحالي في السوق</th>
+                            <th>معدل النمو</th>
+                            <th>البيع المباشر للبنك</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            inventoryArray.forEach((item, index) => {
+                let dbKey = inventoryKeys[index];
+                let displayImg = (item.img && item.img.includes('http')) ? `<img src="${item.img}">` : `<span>${item.img || '📦'}</span>`;
+                
+                bagHTML += `
+                    <div class="bag-item">
+                        ${displayImg}
+                        <div class="bag-title">${item.name}</div>
+                        <div class="bag-price">$${Math.round(item.currentPrice).toLocaleString()}</div>
+                    </div>
+                `;
+
+                let profitOrLossClass = item.rate >= 0 ? "price-up" : "price-down";
+                let rateSign = item.rate >= 0 ? `+${item.rate}%` : `${item.rate}%`;
+
+                prodHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td style="color:#a0aec0;">$${item.buyPrice.toLocaleString()}</td>
+                        <td class="${profitOrLossClass}">$${Math.round(item.currentPrice).toLocaleString()}</td>
+                        <td class="${profitOrLossClass}">${rateSign} / كل ${item.minutesInterval} د</td>
+                        <td>
+                            <button class="btn-sell-item" data-key="${dbKey}" data-price="${Math.round(item.currentPrice)}" style="background:transparent; border:1px solid var(--green); color:var(--green); padding:4px 10px; font-size:12px; cursor:pointer; border-radius:5px;">بيع كاش $</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            prodHTML += `</tbody></table>`;
+            bagGrid.innerHTML = bagHTML;
+            prodList.innerHTML = prodHTML;
+
+            // تفعيل أزرار البيع داخل الحدث المجدول
+            document.querySelectorAll('.btn-sell-item').forEach(btn => {
+                btn.onclick = async function() {
+                    let key = this.getAttribute('data-key');
+                    let price = Number(this.getAttribute('data-price'));
+                    currentUser.balance += price;
+                    await remove(ref(db, `users/${currentUser.username}/inventory/${key}`));
+                    await set(ref(db, `users/${currentUser.username}/balance`), currentUser.balance);
+                    showNotification(`💰 تم بيع السلعة بنجاح واستلمت كاش بقيمة $${price.toLocaleString()}!`);
+                };
+            });
+        }
+
+
+        /* =========================================================================
+           لوحة تحكم الأدمن ومحرك الحساب الذاتي السحابي الموحد (فقط عند حساب Zero)
+           ========================================================================= */
         
-        // ... (باقي كودك الأصلي)
+        function loadAdminPanel() {
+            let queueTable = document.getElementById('admin-queue-table');
+            let usersTable = document.getElementById('admin-users-table');
+            if(!queueTable || !usersTable) return;
+
+            get(ref(db, 'auction_queue')).then((snap) => {
+                let queue = snap.exists() ? snap.val() : {};
+                let html = "";
+                Object.entries(queue).forEach(([key, prod]) => {
+                    html += `
+                        <tr>
+                            <td><input type="text" value="${prod.name}" data-key="${key}" data-field="name" class="adm-q-upd"></td>
+                            <td><input type="text" value="${prod.img}" data-key="${key}" data-field="img" class="adm-q-upd"></td>
+                            <td><input type="number" value="${prod.startPrice}" data-key="${key}" data-field="startPrice" class="adm-q-upd"></td>
+                            <td><input type="number" step="0.1" value="${prod.hourlyRate}" data-key="${key}" data-field="hourlyRate" class="adm-q-upd"></td>
+                            <td><input type="number" value="${prod.increaseEveryMinutes}" data-key="${key}" data-field="increaseEveryMinutes" class="adm-q-upd"></td>
+                            <td><button class="btn-gold-outline btn-adm-q-del" data-key="${key}" style="border-color:var(--red); color:var(--red); padding:4px 8px;">حذف</button></td>
+                        </tr>
+                    `;
+                });
+                queueTable.innerHTML = html;
+
+                // الأحداث التفاعلية للأدمن
+                document.querySelectorAll('.adm-q-upd').forEach(input => {
+                    input.onchange = function() {
+                        let key = this.getAttribute('data-key');
+                        let field = this.getAttribute('data-field');
+                        let val = isNaN(this.value) || this.value === "" ? this.value : Number(this.value);
+                        update(ref(db, `auction_queue/${key}`), { [field]: val });
+                        showNotification("تم تحديث السلعة سحابياً.");
+                    };
+                });
+                document.querySelectorAll('.btn-adm-q-del').forEach(btn => {
+                    btn.onclick = function() {
+                        let key = this.getAttribute('data-key');
+                        remove(ref(db, `auction_queue/${key}`));
+                        showNotification("تم إزالة السلعة من الطابور.");
+                        loadAdminPanel();
+                    };
+                });
+            });
+
+            // عرض وإدارة شجرة حسابات اللاعبين
+            let userHtml = "";
+            Object.entries(globalUsersList).forEach(([username, u]) => {
+                userHtml += `
+                    <tr>
+                        <td><strong>${username}</strong></td>
+                        <td><input type="text" value="${u.password}" data-user="${username}" data-field="password" class="adm-u-upd"></td>
+                        <td>$${u.balance.toLocaleString()}</td>
+                        <td><input type="number" placeholder="تعديل الرصيد كاش" data-user="${username}" data-field="balance" class="adm-u-upd"></td>
+                        <td>
+                            <button class="btn-gold-outline btn-adm-u-del" data-user="${username}" style="border-color:var(--red); color:var(--red); padding:4px 8px;" ${username === 'Zero' ? 'disabled' : ''}>إزالة الحساب</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            usersTable.innerHTML = userHtml;
+
+            document.querySelectorAll('.adm-u-upd').forEach(input => {
+                input.onchange = function() {
+                    let user = this.getAttribute('data-user');
+                    let field = this.getAttribute('data-field');
+                    let val = field === 'balance' ? Number(this.value) : this.value;
+                    if(field === 'balance' && this.value === "") return;
+                    update(ref(db, `users/${user}`), { [field]: val });
+                    showNotification("تم تعديل حساب اللاعب أونلاين.");
+                };
+            });
+            document.querySelectorAll('.btn-adm-u-del').forEach(btn => {
+                btn.onclick = function() {
+                    let user = this.getAttribute('data-user');
+                    remove(ref(db, `users/${user}`));
+                    showNotification("تم تصفية وإزالة الحساب.");
+                };
+            });
+        }
+
+        document.getElementById('btn-admin-add-product').onclick = async function() {
+            let name = document.getElementById('adm-p-name').value.trim();
+            let img = document.getElementById('adm-p-img').value.trim();
+            let price = Number(document.getElementById('adm-p-price').value);
+            let rate = Number(document.getElementById('adm-p-rate').value);
+            let mins = Number(document.getElementById('adm-p-minutes').value);
+
+            if(!name || !price || !mins) return showNotification("برجاء إدخال البيانات الأساسية المطلوبة للسلعة!");
+
+            let queueRef = ref(db, 'auction_queue');
+            await push(queueRef, { name, img: img || "📦", startPrice: price, hourlyRate: rate, increaseEveryMinutes: mins });
+            
+            showNotification("تمت جدولة السلعة الجديدة سحابياً!");
+            loadAdminPanel();
+            
+            document.getElementById('adm-p-name').value = "";
+            document.getElementById('adm-p-img').value = "";
+            document.getElementById('adm-p-price').value = "";
+            document.getElementById('adm-p-rate').value = "";
+            document.getElementById('adm-p-minutes').value = "";
+        };
+
+        // محرك إدارة الوقت وتحديث صعود وهبوط الأسعار في السحابة للأدمن
+        function startAdminEngine() {
+            // تهيئة أولية إذا لم يكن هناك مزاد قائم
+            get(ref(db, 'activeProduct')).then(async (snap) => {
+                if(!snap.exists() || !snap.val().name) {
+                    await advanceToNextAuction();
+                }
+            });
+
+            setInterval(async () => {
+                // 1. إدارة العداد التنازلي التزامني للمزاد المباشر
+                if(systemSettings.auctionDuration > 0) {
+                    systemSettings.auctionDuration--;
+                    await set(ref(db, 'systemSettings/auctionDuration'), systemSettings.auctionDuration);
+                } else {
+                    // انتهاء وقت المزاد وتوزيع السلعة للفائز سحابياً
+                    systemSettings.auctionDuration = 120;
+                    await autoEndAuctionAndAwardSCloud();
+                }
+
+                // 2. تدوير نمو وهبوط أسعار المنتجات المملوكة داخل محافظ اللاعبين أونلاين كل ثانية
+                let allUsers = globalUsersList;
+                let isDbUpdated = false;
+
+                for (let username in allUsers) {
+                    let user = allUsers[username];
+                    if (user.inventory) {
+                        for (let itemKey in user.inventory) {
+                            let item = user.inventory[itemKey];
+                            let targetSeconds = (item.minutesInterval || 1) * 60;
+                            
+                            if (!item.secondsPassed) item.secondsPassed = 0;
+                            item.secondsPassed += 1;
+
+                            if (item.secondsPassed >= targetSeconds) {
+                                let percent = item.rate || 0.5;
+                                item.currentPrice += item.currentPrice * (percent / 100);
+                                if (item.currentPrice < 0) item.currentPrice = 0;
+                                item.secondsPassed = 0;
+                                
+                                // حفظ فوري في مسار السلعة لتحديث الشاشة لدى اللاعب دون ريفريش
+                                await set(ref(db, `users/${username}/inventory/${itemKey}`), item);
+                            }
+                        }
+                    }
+                }
+            }, 1000);
+        }
+
+        // دالة إنهاء المزاد وتوزيع الجائزة سحابياً بالكامل
+        async function autoEndAuctionAndAwardSCloud() {
+            if (activeProduct && activeProduct.highestBidder !== "لا أحد") {
+                let winnerName = activeProduct.highestBidder;
+                let winnerRef = ref(db, `users/${winnerName}`);
+                let snap = await get(winnerRef);
+
+                if (snap.exists()) {
+                    let userData = snap.val();
+                    userData.balance -= activeProduct.currentBid;
+                    
+                    if(!userData.inventory) userData.inventory = {};
+                    
+                    // توليد معرف عشوائي فريد للسلعة داخل شنطة اللاعب
+                    let itemPushRef = push(ref(db, `users/${winnerName}/inventory`));
+                    await set(itemPushRef, {
+                        name: activeProduct.name,
+                        img: activeProduct.img,
+                        buyPrice: activeProduct.currentBid,
+                        currentPrice: activeProduct.currentBid,
+                        rate: activeProduct.hourlyRate,
+                        minutesInterval: activeProduct.increaseEveryMinutes,
+                        secondsPassed: 0
+                    });
+
+                    await update(winnerRef, { balance: userData.balance });
+                    await push(ref(db, 'chat'), { user: "🔨 المزاد", text: `🎉 مبروك! انتهى المزاد وفاز اللاعب [${winnerName}] بـ [${activeProduct.name}] بسعر $${activeProduct.currentBid.toLocaleString()}` });
+                }
+            } else if(activeProduct && activeProduct.name) {
+                await push(ref(db, 'chat'), { user: "🔨 المزاد", text: `📢 انتهى وقت المزاد على [${activeProduct.name}] دون أي مزايدات من اللاعبين.` });
+            }
+
+            // الانتقال للسلعة التالية في الطابور السحابي
+            systemSettings.currentQueueIndex += 1;
+            await set(ref(db, 'systemSettings/currentQueueIndex'), systemSettings.currentQueueIndex);
+            await advanceToNextAuction();
+        }
+
+        async function advanceToNextAuction() {
+            let snap = await get(ref(db, 'auction_queue'));
+            let queue = snap.exists() ? Object.values(snap.val()) : [];
+            
+            if(queue.length === 0) {
+                queue = [{ name: "صندوق الملوك الغامض السحابي", img: "📦", startPrice: 100000, hourlyRate: 0.5, increaseEveryMinutes: 1 }];
+            }
+
+            if(systemSettings.currentQueueIndex >= queue.length) {
+                systemSettings.currentQueueIndex = 0;
+                await set(ref(db, 'systemSettings/currentQueueIndex'), 0);
+            }
+
+            let nextProd = queue[systemSettings.currentQueueIndex];
+            activeProduct = {
+                name: nextProd.name,
+                img: nextProd.img,
+                startPrice: nextProd.startPrice,
+                currentBid: nextProd.startPrice,
+                highestBidder: "لا أحد",
+                hourlyRate: nextProd.hourlyRate,
+                increaseEveryMinutes: nextProd.increaseEveryMinutes
+            };
+
+            await set(ref(db, 'activeProduct'), activeProduct);
+            await set(ref(db, 'systemSettings/auctionDuration'), 120);
+            await set(ref(db, 'chat'), null); // تصفية الشات القديم للمزاد الجديد تلقائياً لمنع التكدس
+        }
     </script>
 </body>
 </html>
