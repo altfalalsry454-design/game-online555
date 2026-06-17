@@ -147,4 +147,132 @@
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
         .admin-table th, .admin-table td { padding: 10px; border: 1px solid #2d3748; text-align: center; }
         .admin-table th { background: #1f2b44; color: var(--gold); }
-        .admin-table input { background: #0b0f19; border: 1px solid #444; color: #fff; padding: 5px; text-align: center; border-radius
+        .admin-table input { background: #0b0f19; border: 1px solid #444; color: #fff; padding: 5px; text-align: center; border-radius: 4px; width: 90%; box-sizing: border-box; }
+
+        .hidden { display: none !important; }
+        
+        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-card); border: 2px solid var(--gold); padding: 25px; border-radius: 12px; z-index: 1000; width: 450px; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; }
+        
+        .rank-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #2d3748; font-size: 18px; }
+        .rank-name { font-weight: bold; color: var(--text); }
+        .rank-money { color: var(--green); font-family: monospace; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="notification-toast">
+        <i class="fas fa-info-circle" style="color: var(--gold);"></i>
+        <span id="toast-text">رسالة النظام تظهر هنا!</span>
+    </div>
+
+    <div id="auth-page" class="auth-container">
+        <h2 id="auth-title">تسجيل الدخول</h2>
+        <input type="text" id="auth-user" placeholder="اسم المستخدم">
+        <input type="password" id="auth-pass" placeholder="كلمة المرور">
+        <button onclick="handleAuth()" id="auth-btn">دخول</button>
+        <p id="auth-switch" onclick="switchAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</p>
+    </div>
+
+    <div id="main-game" class="hidden">
+        <header>
+            <div class="header-left">
+                <span><i class="fas fa-user-circle"></i> <strong id="lbl-username"></strong></span>
+                <button class="btn-gold-outline" id="btn-top-heroes" onclick="toggleHeroes()"><i class="fas fa-trophy"></i> أبطال المزاد</button>
+            </div>
+            <div class="header-center">
+                <h1>مزاد ملوك</h1>
+            </div>
+            <div class="header-right">
+                <button class="gift-btn" onclick="claimGift()"><i class="fas fa-gift"></i></button>
+                <div class="balance-box">الرصيد: $<span id="lbl-balance">250,000</span></div>
+                <button class="btn-gold-outline" style="border-color:var(--red); color:var(--red);" onclick="logout()">خروج</button>
+            </div>
+        </header>
+
+        <div id="page-home" class="main-layout">
+            <button class="center-btn" onclick="goToRoom()"><i class="fas fa-gavel"></i> دخول غرفة المزاد</button>
+
+            <div class="section-box">
+                <h3><i class="fas fa-store"></i> أسعار منتجاتي</h3>
+                <div id="my-products-list"></div>
+            </div>
+
+            <div class="section-box">
+                <h3><i class="fas fa-briefcase"></i> الشنطة</h3>
+                <div class="grid-bag" id="bag-grid"></div>
+            </div>
+        </div>
+
+        <div id="page-room" class="auction-room-grid hidden">
+            <div class="auction-center-panel" style="border-color: #2d3748;">
+                <h3>💬 شات اللاعبين</h3>
+                <div class="chat-box" id="chat-box"></div>
+                <div class="chat-input-group">
+                    <input type="text" id="chat-msg" placeholder="اكتب رسالة للمزاد...">
+                    <button class="btn-gold-outline" onclick="sendChat()">إرسال</button>
+                </div>
+                <button class="btn-gold-outline" style="margin-top:20px; width:100%; border-color:var(--red); color:var(--red);" onclick="goHome()">العودة للرئيسية</button>
+            </div>
+
+            <div class="auction-center-panel">
+                <h2 style="color: var(--gold); margin: 0;">🔨 المزاد المباشر المفتوح</h2>
+                <div style="font-size: 24px; color: var(--red); font-weight: bold; margin: 10px 0;">⏳ ينتهي المزاد تلقائياً بعد: <span id="auc-timer">02:00</span></div>
+                <h3 id="auc-item-name" style="font-size: 24px; margin: 15px 0;">تحميل...</h3>
+                <div class="product-img-placeholder" id="auc-item-img">🖼️</div>
+                <div style="font-size: 22px; margin: 5px 0;">السعر الحالي: <strong id="auc-current-price" style="color: var(--green);">$0</strong></div>
+                <div>أعلى مزايد الآن: <strong id="auc-highest-bidder" style="color: var(--gold);">لا أحد</strong></div>
+
+                <div class="bid-buttons">
+                    <button onclick="raiseBid(5000)">+ 5,000$</button>
+                    <button onclick="raiseBid(10000)">+ 10,000$</button>
+                    <button onclick="raiseBid(50000)">+ 50,000$</button>
+                    <button onclick="raiseBid(100000)">+ 100,000$</button>
+                    <button onclick="raiseBid(1000000)" style="grid-column: span 2; border-color: var(--green); color: var(--green);">🔥 زيادة مليون دولار 1M$</button>
+                </div>
+            </div>
+
+            <div class="auction-center-panel" style="border-color: #2d3748;">
+                <h3>👥 المتواجدون بالمزاد</h3>
+                <ul class="players-list" id="room-users-list"></ul>
+            </div>
+        </div>
+
+        <div id="page-admin" class="admin-container hidden">
+            <button class="btn-gold-outline" style="border-color:var(--red); color:var(--red); width:100%;" onclick="logout()">خروج من لوحة الأدمن</button>
+        </div>
+    </div>
+
+    <script>
+        // دالة الحفظ المدمجة للربط (Firebase + LocalStorage)
+        function saveUserData() {
+            if(currentUser) {
+                localStorage.setItem('users', JSON.stringify(JSON.parse(localStorage.getItem('users'))));
+                db.ref('users/' + currentUser.username.replace(/[.#$\[\]]/g, "_")).set(currentUser);
+            }
+        }
+
+        // دالة رفع المزاد للربط
+        function raiseBid(amt) {
+            if(currentUser.balance < (activeProduct.currentBid + amt)) return showNotification("رصيدك لا يكفي!");
+            db.ref('auction/currentBid').transaction((c) => (c || activeProduct.startPrice) + amt);
+            db.ref('auction/highestBidder').set(currentUser.username);
+        }
+
+        // [ضع هنا باقي الـ JavaScript الخاص بملفك كاملاً]
+        // [تأكد أن كافة دوالك موجودة هنا]
+        
+        // استماع للبيانات من Firebase
+        db.ref('auction').on('value', (s) => {
+            let data = s.val();
+            if(data) {
+                activeProduct.currentBid = data.currentBid;
+                activeProduct.highestBidder = data.highestBidder;
+                setupAuctionRoom();
+            }
+        });
+        
+        // ... (باقي كودك الأصلي)
+    </script>
+</body>
+</html>
